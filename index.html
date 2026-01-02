@@ -1409,9 +1409,9 @@
                 const descuento = tieneOferta ? Math.round(((p.precioOriginal - p.precio) / p.precioOriginal) * 100) : 0;
                 
                 cat.innerHTML += `
-                    <div class="product-card" onclick="abrirModalProducto(${p.id})">
+                    <div class="product-card">
                         ${tieneOferta ? `<div class="offer-badge">-${descuento}%</div>` : ''}
-                        <img src="${p.img}" class="product-image" alt="${p.nombre}">
+                        <img src="${p.img}" class="product-image" onclick="abrirModalProducto(${p.id})" alt="${p.nombre}">
                         <div class="product-info">
                             <span style="font-size:0.7rem; color:#888; text-transform: uppercase; font-weight: bold;">${p.categoria}</span>
                             <h3 style="margin: 5px 0;">${p.nombre}</h3>
@@ -2034,3 +2034,4 @@
 </body>
 
 </html>
+
