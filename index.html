@@ -24,9 +24,18 @@
     <header>
         <!-- Título dinámico desde variable nombreTienda -->
         <h2 style="font-weight: 800;" id="header-titulo">🍃 Daior</h2>
-        <div class="cart-icon-container" id="cart-icon" onclick="toggleCart()">
-            <i class="bi bi-cart3"></i>
-            <span id="cart-count">0</span>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <!-- NUEVO: Icono de Wishlist -->
+            <div class="wishlist-icon-container" id="wishlist-icon" onclick="abrirWishlist()" title="Lista de deseos">
+                <i class="bi bi-heart"></i>
+                <span id="wishlist-count">0</span>
+            </div>
+            
+            <!-- Icono de Carrito existente -->
+            <div class="cart-icon-container" id="cart-icon" onclick="toggleCart()" title="Carrito de compras">
+                <i class="bi bi-cart3"></i>
+                <span id="cart-count">0</span>
+            </div>
         </div>
     </header>
 
@@ -127,7 +136,7 @@
     <!-- Contenedor de notificaciones -->
     <div class="notificacion-container" id="notificacion-container"></div>
 
-    <div class="overlay-bg" id="overlay" onclick="toggleCart()"></div>
+    <div class="overlay-bg" id="overlay" onclick="cerrarTodo()"></div>
     
     <div class="cart-sidebar" id="cart-sidebar">
         <h2><i class="bi bi-cart3"></i> Mi Carrito</h2>
@@ -147,6 +156,7 @@
     </div>
 
     <!-- Modal Detalle Producto -->
+<!-- Modal Detalle Producto -->
     <div class="modal-producto" id="modal-producto">
         <button class="btn-close-modal" onclick="cerrarModalProducto()">
             <i class="bi bi-x"></i>
@@ -159,11 +169,14 @@
                 <p class="modal-producto-descripcion" id="modal-descripcion"></p>
                 <div class="modal-producto-precio" id="modal-precio"></div>
                 <div class="modal-producto-actions">
-                    <button class="btn-add" style="flex: 1;" id="modal-btn-agregar">
+                    <!-- CORRECCIÓN: Botón de Wishlist con mismo ancho -->
+                    <button class="btn-wishlist" id="modal-btn-wishlist" style="flex: 1;">
+                        <i class="bi bi-heart"></i> Agregar a Favoritos
+                    </button>
+                    <button class="btn-add" id="modal-btn-agregar" style="flex: 1;">
                         <i class="bi bi-cart-plus"></i> Agregar al Carrito
                     </button>
-                    <!-- NUEVO: Botón Comprar Ahora en modal -->
-                    <button class="btn-buy-now" style="flex: 1;" id="modal-btn-comprar">
+                    <button class="btn-buy-now" id="modal-btn-comprar" style="flex: 1;">
                         <i class="bi bi-bag-check"></i> Comprar Ahora
                     </button>
                 </div>
@@ -194,7 +207,19 @@
             </button>
         </div>
     </div>
-
+    <!-- Wishlist Lateral -->
+    <div class="wishlist-sidebar" id="wishlist-sidebar">
+        <h2><i class="bi bi-heart"></i> Mi Lista de Deseos</h2>
+        <div class="wishlist-items" id="wishlist-items"></div>
+        <div style="margin-top: 20px;">
+            <button class="btn-add" style="background: #ff4757; margin-top: 15px; width: 100%;" onclick="vaciarWishlist()">
+                <i class="bi bi-trash"></i> Vaciar Lista de Deseos
+            </button>
+            <button onclick="cerrarWishlist()" style="margin-top: 10px; background: none; border: none; color:#888; cursor: pointer; padding: 10px; display: flex; align-items: center; gap: 5px; width: 100%; justify-content: center;">
+                <i class="bi bi-arrow-left"></i> Cerrar
+            </button>
+        </div>
+    </div>
     <!-- SweetAlert2 para notificaciones especiales -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Biblioteca para generar la imagen PNG -->
