@@ -59,7 +59,7 @@ const productos = [
         precioOriginal: 35.00,
         categoria: "Drumkits", 
         img: "https://i.pinimg.com/1200x/4a/61/76/4a6176b37eb70835473089f4cb21e243.jpg",
-        descripcion: "La librería de sonidos que necesitas para que tus beats destaquen con unos drums potentes irresistibles para el artistas.",
+        descripcion: "La librería de sonidos que necesitas para que tus beats destaquen con unos drums potentes irresistibles para los artistas.",
         oferta: true
     },
 ];
