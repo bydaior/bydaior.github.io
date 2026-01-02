@@ -300,7 +300,7 @@ header {
 
 .product-price { 
     font-size: 1.4rem;
-    font-weight:normal; 
+    font-weight:bold; 
     margin: 5px 0; 
     color: var(--color-primary); 
     display: flex;
@@ -313,6 +313,7 @@ header {
     font-size: 1.1rem;
     color: #95a5a6;
     text-decoration: line-through;
+    font-weight:normal; 
 }
 
 .discount-percent {
