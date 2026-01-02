@@ -228,15 +228,15 @@ function renderizar(lista) {
         const descuento = tieneOferta ? Math.round(((p.precioOriginal - p.precio) / p.precioOriginal) * 100) : 0;
         const slug = p.slug || crearSlug(p.nombre);
         
-        // Agregar ID único al contenedor del producto
+        // Agregar ID único al contenedor del producto (sin la palabra "producto")
         cat.innerHTML += `
-            <div class="product-card" id="producto-${slug}">
+            <div class="product-card" id="${slug}">
                 ${tieneOferta ? `<div class="offer-badge">-${descuento}%</div>` : ''}
                 <img src="${p.img}" class="product-image" onclick="abrirModalProducto(${p.id})" alt="${p.nombre}">
                 <div class="product-info">
                     <span style="font-size:0.7rem; color:#888; text-transform: uppercase; font-weight: bold;">${p.categoria}</span>
                     <h3 style="margin: 5px 0;">
-                        <a href="#producto-${slug}" style="color: inherit; text-decoration: none;" onclick="abrirModalProducto(${p.id}); return false;">
+                        <a href="#${slug}" style="color: inherit; text-decoration: none;" onclick="abrirModalProducto(${p.id}); return false;">
                             ${p.nombre}
                         </a>
                     </h3>
@@ -348,9 +348,9 @@ function abrirModalProducto(id) {
     
     document.getElementById('modal-producto').classList.add('active');
     
-    // Actualizar la URL con el hash del producto
+    // Actualizar la URL con el hash del producto (sin "producto-")
     const slug = producto.slug || crearSlug(producto.nombre);
-    history.pushState(null, null, `#producto-${slug}`);
+    history.pushState(null, null, `#${slug}`);
 }
 
 // Cerrar modal de detalle del producto
@@ -359,7 +359,7 @@ function cerrarModalProducto() {
     productoSeleccionadoId = null;
     
     // Limpiar el hash de la URL cuando se cierra el modal
-    if (window.location.hash.includes('producto-')) {
+    if (window.location.hash) {
         history.pushState(null, null, ' ');
     }
 }
@@ -841,13 +841,10 @@ function actualizarLabelPrecio() {
 function procesarHashURL() {
     const hash = window.location.hash;
     
-    if (hash) {
-        // Extraer el slug del hash (ej: #producto-vocal-mixing)
-        const match = hash.match(/^#producto-(.+)$/);
+    if (hash && hash.startsWith('#')) {
+        const slug = hash.substring(1); // Quitar el "#" del inicio
         
-        if (match) {
-            const slug = match[1];
-            
+        if (slug) {
             // Buscar el producto por slug
             const producto = productos.find(p => {
                 const productoSlug = p.slug || crearSlug(p.nombre);
