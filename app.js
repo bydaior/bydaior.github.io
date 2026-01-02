@@ -70,6 +70,16 @@ let numeroOrden = localStorage.getItem('numero_orden') || generarNumeroOrden();
 let productoSeleccionadoId = null;
 let bannerMostrado = localStorage.getItem('banner_oferta_mostrado') !== 'true';
 
+// Función para crear slug (ID amigable para URL)
+function crearSlug(texto) {
+    return texto
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 // Función para actualizar el nombre de la tienda en toda la página
 function actualizarNombreTienda() {
     document.getElementById('titulo-pagina').textContent = nombreTienda;
@@ -216,14 +226,20 @@ function renderizar(lista) {
     lista.forEach(p => {
         const tieneOferta = p.oferta && p.precioOriginal;
         const descuento = tieneOferta ? Math.round(((p.precioOriginal - p.precio) / p.precioOriginal) * 100) : 0;
+        const slug = p.slug || crearSlug(p.nombre);
         
+        // Agregar ID único al contenedor del producto
         cat.innerHTML += `
-            <div class="product-card">
+            <div class="product-card" id="producto-${slug}">
                 ${tieneOferta ? `<div class="offer-badge">-${descuento}%</div>` : ''}
                 <img src="${p.img}" class="product-image" onclick="abrirModalProducto(${p.id})" alt="${p.nombre}">
                 <div class="product-info">
                     <span style="font-size:0.7rem; color:#888; text-transform: uppercase; font-weight: bold;">${p.categoria}</span>
-                    <h3 style="margin: 5px 0;">${p.nombre}</h3>
+                    <h3 style="margin: 5px 0;">
+                        <a href="#producto-${slug}" style="color: inherit; text-decoration: none;" onclick="abrirModalProducto(${p.id}); return false;">
+                            ${p.nombre}
+                        </a>
+                    </h3>
                     <div class="product-price">
                         $${p.precio.toFixed(2)}
                         ${tieneOferta ? `
@@ -269,7 +285,7 @@ function comprarAhora(id) {
     // Notificación personalizada
     mostrarNotificacion(
         '¡Compra rápida!',
-        `${prod.nombre} añadido.`,
+        `${prod.nombre} añadido. Redirigiendo al resumen...`,
         'exito',
         1500
     );
@@ -331,12 +347,21 @@ function abrirModalProducto(id) {
     };
     
     document.getElementById('modal-producto').classList.add('active');
+    
+    // Actualizar la URL con el hash del producto
+    const slug = producto.slug || crearSlug(producto.nombre);
+    history.pushState(null, null, `#producto-${slug}`);
 }
 
 // Cerrar modal de detalle del producto
 function cerrarModalProducto() {
     document.getElementById('modal-producto').classList.remove('active');
     productoSeleccionadoId = null;
+    
+    // Limpiar el hash de la URL cuando se cierra el modal
+    if (window.location.hash.includes('producto-')) {
+        history.pushState(null, null, ' ');
+    }
 }
 
 function agregarAlCarrito(id) {
@@ -812,6 +837,33 @@ function actualizarLabelPrecio() {
     document.getElementById('precio-valor').textContent = document.getElementById('filtro-precio').value; 
 }
 
+// NUEVA FUNCIÓN: Procesar hash de URL
+function procesarHashURL() {
+    const hash = window.location.hash;
+    
+    if (hash) {
+        // Extraer el slug del hash (ej: #producto-vocal-mixing)
+        const match = hash.match(/^#producto-(.+)$/);
+        
+        if (match) {
+            const slug = match[1];
+            
+            // Buscar el producto por slug
+            const producto = productos.find(p => {
+                const productoSlug = p.slug || crearSlug(p.nombre);
+                return productoSlug === slug;
+            });
+            
+            if (producto) {
+                // Abrir el modal del producto después de un breve delay
+                setTimeout(() => {
+                    abrirModalProducto(producto.id);
+                }, 300);
+            }
+        }
+    }
+}
+
 // Inicializar la página
 function inicializarPagina() {
     // Actualizar nombre de la tienda
@@ -823,6 +875,9 @@ function inicializarPagina() {
     
     // Mostrar banner de oferta después de cargar
     mostrarBannerOferta();
+    
+    // Procesar el hash de la URL si existe
+    procesarHashURL();
 }
 
 // Event Listeners
@@ -843,6 +898,9 @@ document.getElementById('modal-producto').addEventListener('click', function(eve
         cerrarModalProducto();
     }
 });
+
+// Escuchar cambios en el hash de la URL
+window.addEventListener('hashchange', procesarHashURL);
 
 // Inicializar la página cuando se carga el DOM
 document.addEventListener('DOMContentLoaded', inicializarPagina);
