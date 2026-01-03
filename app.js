@@ -968,123 +968,6 @@ function descargarResumenPNG() {
         });
 }
 
-// Función mejorada para procesar el envío a Telegram
-function procesarEnvioTelegram() {
-    // Cerrar primero el modal de resumen temporalmente para que SweetAlert2 aparezca encima
-    document.getElementById('modal-resumen').classList.remove('active');
-    
-    // Usar SweetAlert2 para confirmación
-    Swal.fire({
-        title: '¿Ya descargaste el recibo?',
-        html: `
-            <div style="text-align: left; padding: 10px;">
-                <p><strong>⚠️ IMPORTANTE:</strong></p>
-                <p>Si ya tienes el recibo, sigue adelante.</p>
-                <p>Si no, vuelve al resumen de pedido.</p>
-                <p>Sin recibo no se procesará el pedido.</p>
-            </div>
-        `,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#0088cc',
-        cancelButtonColor: '#95a5a6',
-        confirmButtonText: 'Sí, lo tengo',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true,
-        allowOutsideClick: false,
-        customClass: {
-            container: 'swal2-container',
-            popup: 'swal2-popup'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Limpiar carrito
-            carrito = [];
-            // Generar nuevo número de orden para el próximo pedido
-            numeroOrden = generarNumeroOrden();
-            
-            guardar();
-            
-            // Cerrar también el carrito si está abierto
-            if(document.getElementById('cart-sidebar').classList.contains('active')) {
-                toggleCart();
-            }
-            
-            // Mostrar SweetAlert2 de pedido completado EN EL CENTRO
-            Swal.fire({
-                title: '¡Pedido Completado!',
-                html: `
-                    <div style="text-align: center; padding: 15px;">
-                        <div style="font-size: 4rem; color: #27ae60; margin-bottom: 15px;">
-                            <i class="bi bi-check-circle-fill"></i>
-                        </div>
-                        <h3 style="color: #2c3e50; margin-bottom: 10px;">¡Gracias por tu compra!</h3>
-                        <p style="color: #666; margin-bottom: 20px;">
-                            Tu pedido ha sido procesado exitosamente.<br>
-                            Recuerda enviar la captura o la orden descargada a nuestro Telegram.
-                        </p>
-                        <p><b>✈️ Al volver a la tienda te llevaré a Telegram.</b></p>
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 20px 0;">
-                            <p style="margin: 0; color: #2c3e50;">
-                                <strong>Número de orden:</strong><br>
-                                <span style="font-family: monospace; font-size: 1.2rem;">${numeroOrden}</span>
-                            </p>
-                        </div>
-                    </div>
-                `,
-                icon: 'success',
-                confirmButtonText: 'Volver a la tienda',
-                confirmButtonColor: '#2c3e50',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                allowEnterKey: false,
-                showCancelButton: false,
-                focusConfirm: true,
-                customClass: {
-                    container: 'swal2-container',
-                    popup: 'swal2-popup'
-                }
-            }).then((result) => {
-                // Cuando el usuario haga clic en "Volver a la tienda"
-                // Redirigir a Telegram en nueva pestaña
-                window.open('https://t.me/joshgtz', '_blank');
-                // La alerta se cierra automáticamente al hacer clic
-            });
-        } else {
-            // Si el usuario cancela, mostrar recordatorio y volver a abrir el resumen
-            Swal.fire({
-                title: 'Recordatorio',
-                html: `
-                    <div style="text-align: center; padding: 10px;">
-                        <div style="font-size: 3rem; color: #f39c12; margin-bottom: 10px;">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                        </div>
-                        <p style="color: #666;">
-                            Recuerda tomar la captura de pantalla<br>
-                            o descargar la orden como imagen PNG<br>
-                            <strong>antes de continuar</strong>.
-                        </p>
-                        <p style="color: #999; font-size: 0.9rem; margin-top: 15px;">
-                            La orden desaparecerá cuando envíes el pedido.
-                        </p>
-                    </div>
-                `,
-                icon: 'info',
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#95a5a6',
-                timer: 8000,
-                timerProgressBar: true,
-                customClass: {
-                    container: 'swal2-container',
-                    popup: 'swal2-popup'
-                }
-            }).then(() => {
-                // Volver a abrir el modal de resumen
-                document.getElementById('modal-resumen').classList.add('active');
-            });
-        }
-    });
-}
 
 // FUNCIÓN MEJORADA PARA APLICAR TODOS LOS FILTROS
 function aplicarFiltros() {
@@ -1200,6 +1083,581 @@ function cerrarTodo() {
     document.getElementById('overlay').classList.remove('active');
 }
 
+// Variables para PayPal
+let paypalButtonsInstance = null;
+let montoTotalPayPal = 0;
+
+// Inicializar botones de PayPal
+function inicializarPayPal() {
+    // Destruir instancia anterior si existe
+    if (paypalButtonsInstance) {
+        paypalButtonsInstance.close();
+    }
+    
+    const paypalButtonContainer = document.getElementById('paypal-button-container');
+    if (!paypalButtonContainer) return;
+    
+    paypalButtonContainer.innerHTML = '';
+    
+    // Calcular el monto total
+    montoTotalPayPal = carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+    
+    if (montoTotalPayPal <= 0) {
+        paypalButtonContainer.innerHTML = `
+            <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <i class="bi bi-cart-x" style="font-size: 2rem; color: #95a5a6;"></i>
+                <p style="margin-top: 10px; color: #666;">Agrega productos al carrito para pagar con PayPal</p>
+            </div>
+        `;
+        return;
+    }
+    
+    try {
+        paypalButtonsInstance = paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color: 'blue',
+                shape: 'rect',
+                label: 'paypal',
+                tagline: false,
+                height: 55
+            },
+            
+            createOrder: function(data, actions) {
+                // Crear la orden en PayPal
+                return actions.order.create({
+                    purchase_units: [{
+                        description: `Orden ${numeroOrden} - ${nombreTienda}`,
+                        amount: {
+                            currency_code: "USD",
+                            value: montoTotalPayPal.toFixed(2),
+                            breakdown: {
+                                item_total: {
+                                    currency_code: "USD",
+                                    value: montoTotalPayPal.toFixed(2)
+                                }
+                            }
+                        },
+                        items: carrito.map(item => ({
+                            name: item.nombre.substring(0, 127), // PayPal limita a 127 caracteres
+                            description: item.categoria,
+                            unit_amount: {
+                                currency_code: "USD",
+                                value: item.precio.toFixed(2)
+                            },
+                            quantity: item.cantidad,
+                            category: 'DIGITAL_GOODS'
+                        }))
+                    }],
+                    application_context: {
+                        shipping_preference: 'NO_SHIPPING'
+                    }
+                });
+            },
+            
+            onApprove: function(data, actions) {
+                // Capturar la orden cuando el usuario aprueba el pago
+                return actions.order.capture().then(function(details) {
+                    // Pago exitoso
+                    mostrarConfirmacionPagoExitoso(details);
+                });
+            },
+            
+            onError: function(err) {
+                // Manejar errores
+                console.error('Error en PayPal:', err);
+                mostrarErrorPayPal(err);
+            },
+            
+            onCancel: function(data) {
+                // Usuario canceló el pago
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Pago cancelado',
+                    text: 'El pago con PayPal fue cancelado.',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            }
+        });
+        
+        // Renderizar los botones
+        if (paypalButtonsInstance.isEligible()) {
+            paypalButtonsInstance.render('#paypal-button-container');
+        } else {
+            // Mostrar botón manual si PayPal no está disponible
+            mostrarBotonPayPalManual();
+        }
+        
+    } catch (error) {
+        console.error('Error al inicializar PayPal:', error);
+        mostrarBotonPayPalManual();
+    }
+}
+
+// Mostrar botón manual de PayPal
+function mostrarBotonPayPalManual() {
+    const paypalButtonContainer = document.getElementById('paypal-button-container');
+    if (!paypalButtonContainer) return;
+    
+    paypalButtonContainer.innerHTML = `
+        <button class="btn-paypal-manual" onclick="procesarPagoPayPalManual()">
+            <i class="bi bi-paypal"></i> Pagar $${montoTotalPayPal.toFixed(2)} con PayPal
+        </button>
+        <p style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
+            Serás redirigido a PayPal para completar el pago
+        </p>
+    `;
+}
+
+// Procesar pago manual de PayPal
+function procesarPagoPayPalManual() {
+    if (montoTotalPayPal <= 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Carrito vacío',
+            text: 'No hay productos para pagar.',
+            confirmButtonColor: '#e74c3c'
+        });
+        return;
+    }
+    
+    // Aquí podrías redirigir a un enlace de PayPal generado manualmente
+    // Por ahora, mostraremos un mensaje
+    Swal.fire({
+        title: 'Redireccionando a PayPal...',
+        html: `
+            <div style="text-align: center; padding: 20px;">
+                <i class="bi bi-paypal" style="font-size: 3rem; color: #0070ba; margin-bottom: 15px;"></i>
+                <p>Serás redirigido a PayPal para completar el pago de <strong>$${montoTotalPayPal.toFixed(2)}</strong></p>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <p style="margin: 0; font-size: 0.9rem;">
+                        <strong>Número de orden:</strong><br>
+                        ${numeroOrden}
+                    </p>
+                </div>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Continuar a PayPal',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#0070ba',
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+            // En una implementación real, aquí redirigirías a PayPal
+            // window.location.href = `https://www.paypal.com/paypalme/tuusuario/${montoTotalPayPal}`;
+            
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Simular redirección a PayPal
+                    // En producción, descomenta la línea de window.location
+                    resolve();
+                }, 2000);
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Simular pago exitoso
+            mostrarConfirmacionPagoExitoso({
+                id: 'SIMULATED-' + Date.now(),
+                payer: {
+                    name: { given_name: 'Cliente', surname: 'PayPal' },
+                    email_address: 'cliente@paypal.com'
+                }
+            });
+        }
+    });
+}
+
+// Mostrar confirmación de pago exitoso
+function mostrarConfirmacionPagoExitoso(details) {
+    // Cerrar modal de resumen temporalmente
+    document.getElementById('modal-resumen').classList.remove('active');
+    
+    // Limpiar carrito
+    carrito = [];
+    // Generar nuevo número de orden
+    numeroOrden = generarNumeroOrden();
+    guardar();
+    
+    // Mostrar confirmación de pago exitoso
+    Swal.fire({
+        title: '¡Pago Completado!',
+        html: `
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 4rem; color: #27ae60; margin-bottom: 15px;">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 10px;">¡Pago Exitoso!</h3>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Tu pago de <strong>$${montoTotalPayPal.toFixed(2)}</strong> fue procesado exitosamente.
+                </p>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 20px 0; text-align: left;">
+                    <p style="margin: 5px 0;"><strong>ID de transacción:</strong><br>
+                    <code style="font-size: 0.9rem;">${details.id}</code></p>
+                    <p style="margin: 5px 0;"><strong>Cliente:</strong><br>
+                    ${details.payer.name.given_name} ${details.payer.name.surname}</p>
+                    <p style="margin: 5px 0;"><strong>Email:</strong><br>
+                    ${details.payer.email_address}</p>
+                    <p style="margin: 5px 0;"><strong>Número de orden:</strong><br>
+                    ${numeroOrden}</p>
+                </div>
+                <p style="color: #999; font-size: 0.9rem; margin-top: 15px;">
+                    Recibirás un email de confirmación de PayPal.<br>
+                    Ahora debes enviar los detalles de tu pedido a nuestro Telegram.
+                </p>
+            </div>
+        `,
+        icon: 'success',
+        confirmButtonText: 'Enviar detalles a Telegram',
+        confirmButtonColor: '#0088cc',
+        showCancelButton: true,
+        cancelButtonText: 'Volver a la tienda',
+        allowOutsideClick: false,
+        customClass: {
+            container: 'swal2-container',
+            popup: 'swal2-popup'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Redirigir a Telegram
+            window.open('https://t.me/joshgtz', '_blank');
+            
+            // Mostrar mensaje final
+            Swal.fire({
+                title: '¡Gracias por tu compra!',
+                text: 'Tu pedido está siendo procesado. Nos contactaremos contigo pronto.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#2c3e50'
+            });
+        } else {
+            // Volver a la tienda
+            window.location.reload();
+        }
+    });
+}
+
+// Mostrar error de PayPal
+function mostrarErrorPayPal(err) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error en el pago',
+        html: `
+            <div style="text-align: left; padding: 10px;">
+                <p>Hubo un problema procesando tu pago con PayPal.</p>
+                <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 0.8rem;">
+                    Error: ${err.message || 'Desconocido'}
+                </div>
+                <p style="margin-top: 15px; font-size: 0.9rem;">
+                    Puedes intentar de nuevo o usar otro método de pago.
+                </p>
+            </div>
+        `,
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#e74c3c'
+    });
+}
+
+// Modificar la función abrirResumen para inicializar PayPal
+function abrirResumen() {
+    if (carrito.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Carrito vacío',
+            text: 'Agrega productos antes de finalizar el pedido',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+        return;
+    }
+    
+    const resumenBox = document.getElementById('resumen-lista');
+    let total = 0;
+    let subtotal = 0;
+    
+    const fecha = new Date().toLocaleDateString('es-VE', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    let html = `
+        <div class="receipt-header">
+            <div>
+                <strong>Fecha:</strong><br>
+                ${fecha}
+            </div>
+            <div style="text-align: right;">
+                <strong>Orden #:</strong><br>
+                ${numeroOrden}
+            </div>
+        </div>
+        <div class="receipt-items">
+            <div class="receipt-item" style="font-weight: bold; border-bottom: 2px solid #333;">
+                <div class="item-name">PRODUCTO</div>
+                <div class="item-qty">CANT</div>
+                <div class="item-price">P.U.</div>
+                <div class="item-total">SUBTOTAL</div>
+            </div>
+    `;
+    
+    carrito.forEach(item => {
+        const itemTotal = item.precio * item.cantidad;
+        subtotal += itemTotal;
+        
+        html += `
+            <div class="receipt-item">
+                <div class="item-name">${item.nombre}</div>
+                <div class="item-qty">${item.cantidad}</div>
+                <div class="item-price">$${item.precio.toFixed(2)}</div>
+                <div class="item-total">$${itemTotal.toFixed(2)}</div>
+            </div>
+        `;
+    });
+    
+    total = subtotal;
+    
+    html += `
+        </div>
+        <div class="receipt-totals">
+            <div class="total-row">
+                <span>Subtotal:</span>
+                <span>$${subtotal.toFixed(2)}</span>
+            </div>
+            <div class="total-row final">
+                <span>TOTAL A PAGAR:</span>
+                <span style="color: var(--color-accent); font-size: 1.2rem;">$${total.toFixed(2)}</span>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: #666; border-top: 1px dashed #ccc; padding-top: 10px;">
+            <strong>${nombreTienda}</strong><br>
+            Caracas, Venezuela<br>
+            Teléfono: +58 412-XXXXXXX<br>
+            Gracias por su compra!
+        </div>
+    `;
+    
+    resumenBox.innerHTML = html;
+    document.getElementById('modal-resumen').classList.add('active');
+    
+    // Inicializar PayPal cuando se abre el resumen
+    setTimeout(() => {
+        inicializarPayPal();
+    }, 300);
+}
+
+// Modificar la función cerrarResumen para limpiar PayPal
+function cerrarResumen() { 
+    document.getElementById('modal-resumen').classList.remove('active');
+    
+    // Limpiar instancia de PayPal
+    if (paypalButtonsInstance) {
+        paypalButtonsInstance.close();
+        paypalButtonsInstance = null;
+    }
+    
+    const paypalButtonContainer = document.getElementById('paypal-button-container');
+    if (paypalButtonContainer) {
+        paypalButtonContainer.innerHTML = '';
+    }
+    
+    // También cerrar el overlay si no hay otros modales abiertos
+    if (!document.getElementById('modal-producto').classList.contains('active') &&
+        !document.getElementById('cart-sidebar').classList.contains('active') &&
+        !document.getElementById('wishlist-sidebar').classList.contains('active')) {
+        document.getElementById('overlay').classList.remove('active');
+    }
+}
+
+// Modificar procesarEnvioTelegram para incluir opción de PayPal
+function procesarEnviarOrden() {
+    // Cerrar primero el modal de resumen temporalmente
+    document.getElementById('modal-resumen').classList.remove('active');
+    
+    Swal.fire({
+        title: 'Método de pago',
+        html: `
+            <div style="text-align: center; padding: 20px;">
+                <p>¿Cómo deseas realizar el pago?</p>
+                <div style="display: flex; gap: 10px; margin-top: 20px; flex-direction: column;">
+                    <button id="btn-paypal-modal" class="btn-paypal-manual" style="margin: 0;">
+                        <i class="bi bi-paypal"></i> Pagar con PayPal
+                    </button>
+                    <button id="btn-telegram-direct" class="btn-telegram" style="margin: 0;">
+                        <i class="bi bi-telegram"></i> Enviar a Telegram (pago manual)
+                    </button>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                    <strong>Total a pagar:</strong> $${montoTotalPayPal.toFixed(2)}
+                </p>
+            </div>
+        `,
+        showConfirmButton: false,
+        showCloseButton: true,
+        allowOutsideClick: true,
+        customClass: {
+            container: 'swal2-container',
+            popup: 'swal2-popup'
+        }
+    });
+    
+    // Agregar event listeners a los botones
+    setTimeout(() => {
+        const btnPaypal = document.getElementById('btn-paypal-modal');
+        const btnTelegram = document.getElementById('btn-telegram-direct');
+        
+        if (btnPaypal) {
+            btnPaypal.onclick = function() {
+                Swal.close();
+                // Volver a abrir el resumen con PayPal
+                document.getElementById('modal-resumen').classList.add('active');
+                setTimeout(() => {
+                    inicializarPayPal();
+                }, 300);
+            };
+        }
+        
+        if (btnTelegram) {
+            btnTelegram.onclick = function() {
+                Swal.close();
+                procesarEnvioTelegramManual();
+            };
+        }
+    }, 100);
+}
+
+// Función para procesar envío a Telegram (pago manual)
+function procesarEnvioTelegramManual() {
+    Swal.fire({
+        title: '¿Ya descargaste el recibo?',
+        html: `
+            <div style="text-align: left; padding: 10px;">
+                <p><strong>⚠️ IMPORTANTE:</strong></p>
+                <p>Si ya tienes el recibo, sigue adelante.</p>
+                <p>Si no, vuelve al resumen de pedido.</p>
+                <p>Sin recibo no se procesará el pedido.</p>
+            </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#0088cc',
+        cancelButtonColor: '#95a5a6',
+        confirmButtonText: 'Sí, lo tengo',
+        cancelButtonText: 'Volver al resumen',
+        reverseButtons: true,
+        allowOutsideClick: false,
+        customClass: {
+            container: 'swal2-container',
+            popup: 'swal2-popup'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Limpiar carrito
+            carrito = [];
+            // Generar nuevo número de orden para el próximo pedido
+            numeroOrden = generarNumeroOrden();
+            
+            guardar();
+            
+            // Cerrar también el carrito si está abierto
+            if(document.getElementById('cart-sidebar').classList.contains('active')) {
+                toggleCart();
+            }
+            
+            // Mostrar SweetAlert2 de pedido completado EN EL CENTRO
+            Swal.fire({
+                title: '¡Pedido Completado!',
+                html: `
+                    <div style="text-align: center; padding: 15px;">
+                        <div style="font-size: 4rem; color: #27ae60; margin-bottom: 15px;">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <h3 style="color: #2c3e50; margin-bottom: 10px;">¡Gracias por tu compra!</h3>
+                        <p style="color: #666; margin-bottom: 20px;">
+                            Tu pedido ha sido procesado exitosamente.<br>
+                            Recuerda enviar la captura o la orden descargada a nuestro Telegram.
+                        </p>
+                        <p><b>✈️ Al volver a la tienda te llevaré a Telegram.</b></p>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                            <p style="margin: 0; color: #2c3e50;">
+                                <strong>Número de orden:</strong><br>
+                                <span style="font-family: monospace; font-size: 1.2rem;">${numeroOrden}</span>
+                            </p>
+                        </div>
+                    </div>
+                `,
+                icon: 'success',
+                confirmButtonText: 'Volver a la tienda',
+                confirmButtonColor: '#2c3e50',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                showCancelButton: false,
+                focusConfirm: true,
+                customClass: {
+                    container: 'swal2-container',
+                    popup: 'swal2-popup'
+                }
+            }).then((result) => {
+                // Cuando el usuario haga clic en "Volver a la tienda"
+                // Redirigir a Telegram en nueva pestaña
+                window.open('https://t.me/joshgtz', '_blank');
+                // La alerta se cierra automáticamente al hacer clic
+            });
+        } else {
+            // Si el usuario cancela (presiona "Volver al resumen"), simplemente regresar al modal
+            // NO mostrar ningún recordatorio, solo volver al modal
+            document.getElementById('modal-resumen').classList.add('active');
+            
+            // Opcionalmente, puedes mostrar una notificación breve si lo deseas
+            mostrarNotificacion(
+                'Volviendo al resumen',
+                'Puedes descargar la orden o continuar con PayPal',
+                'info',
+                2000
+            );
+        }
+    });
+}
+
+// Inicializar la página
+function inicializarPagina() {
+    // Actualizar nombre de la tienda
+    actualizarNombreTienda();
+    
+    cargarCategorias();
+    renderizar(productos);
+    actualizarUI();
+    
+    // Inicializar contador de wishlist
+    actualizarContadorWishlist();
+    
+    // Mostrar banner de oferta después de cargar
+    mostrarBannerOferta();
+    
+    // Procesar el hash de la URL si existe
+    procesarHashURL();
+    
+    // Verificar si PayPal SDK está cargado
+    setTimeout(() => {
+        if (typeof paypal === 'undefined') {
+            console.warn('PayPal SDK no se cargó correctamente');
+            mostrarNotificacion(
+                'PayPal no disponible',
+                'El sistema de pagos puede no funcionar correctamente',
+                'advertencia',
+                5000
+            );
+        }
+    }, 2000);
+}
 
 // Escuchar cambios en el hash de la URL
 window.addEventListener('hashchange', procesarHashURL);

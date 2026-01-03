@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="styles.css">
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AeZGoX-wRZUnZVUyFdSzaAvFQro93wsgQDhY6HhgRSQUVDmuZpvcxhGJ3ZtE0kA2wMyTRvWsAzr05bAF&currency=USD"></script>
 </head>
 <body>
 
@@ -184,29 +186,62 @@
         </div>
     </div>
 
-    <!-- MODAL RESUMEN CON NUEVO BOTÓN DE DESCARGA -->
+<!-- MODAL RESUMEN CON SCROLL -->
     <div class="modal-overlay" id="modal-resumen">
         <div class="modal-content">
-            <h2><i class="bi bi-receipt"></i> Resumen de Pedido</h2>
-            <div class="summary-box" id="resumen-lista"></div>
-            <p style="color:var(--color-accent); font-weight:bold; margin-bottom: 20px; margin-top: 15px;">
-                <i class="bi bi-exclamation-triangle"></i> Tome una captura de pantalla a esta ventana o descargue la orden como imagen, luego debes enviarla a nuestro Telegram para procesar el pedido.
-            </p>
-            <!-- NUEVO BOTÓN para descargar recibo como PNG -->
-            <button class="btn-descargar" onclick="descargarResumenPNG()">
-                <i class="bi bi-download"></i> Descargar Orden
-            </button>
-            <br>
-            <!-- Botón para Telegram (existente) -->
-            <button class="btn-telegram" onclick="procesarEnvioTelegram()">
-                <i class="bi bi-telegram"></i> Enviar a Telegram
-            </button>
-            <br>
-            <button onclick="cerrarResumen()" style="background:none; border:none; text-decoration: underline; cursor:pointer; padding: 10px; display: flex; align-items: center; gap: 5px; margin: 0 auto;">
-                <i class="bi bi-arrow-left"></i> Seguir comprando
-            </button>
-        </div>
+            <h2 style="margin-top: 0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-receipt"></i> Resumen de Pedido
+            </h2>
+            
+            <div class="modal-body">
+                <div class="summary-box" id="resumen-lista"></div>
+                <!-- BOTÓN para descargar recibo como PNG -->
+                <button class="btn-descargar" onclick="descargarResumenPNG()" style="width: 100%; margin-bottom: 15px;">
+                    <i class="bi bi-download"></i> Descargar Orden
+                </button> 
+                <p style="color:var(--color-accent); font-weight:bold; margin: 20px 0 15px; padding: 15px; background: #fff8e6; border-radius: 8px; border-left: 4px solid var(--color-accent);">
+                    <i class="bi bi-exclamation-triangle" style="margin-right: 8px;"></i> 
+                    Tome una captura a la orden o descárguela como imagen, deberás enviarla a nuestro Telegram para que podamos procesar el pedido.<br>
+                    - Si pagas con PayPal, igualmente necesitarás enviar el recibo.
+                </p>
+                
+                <!-- Contenedor para el botón de PayPal -->
+                <div id="paypal-button-container" style="margin: 15px 0; min-height: 55px;"></div>
+                <!-- Botón para enviar la orden -->
+                <button class="btn-enviar-orden" onclick="procesarEnviarOrden()" style="width: 100%; margin-bottom: 15px;">
+                    <i class="bi bi-send"></i> Notificar Pago / Pedido
+                </button>
+                
+                <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                    <button onclick="cerrarResumen()" style="background: none; border: none; text-decoration: underline; cursor: pointer; padding: 10px; display: inline-flex; align-items: center; gap: 5px; color: #666; font-size: 0.95rem;">
+                        <i class="bi bi-arrow-left"></i> Seguir comprando
+                    </button>
+                </div>
+                
+                <!-- Nota adicional en la parte inferior -->
+                <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.85rem; color: #666;">
+                    <p style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                        <i class="bi bi-shield-check" style="color: var(--color-success);"></i>
+                        <span><strong>Pago seguro:</strong> Todos los pagos son procesados de forma segura.</span>
+                    </p>
+                    <p style="margin: 8px 0 0 0; display: flex; align-items: center; gap: 8px;">
+                        <i class="bi bi-clock-history" style="color: var(--color-accent);"></i>
+                        <span><strong>Tiempo de procesamiento:</strong> 1-2 horas después de confirmado el pago.</span>
+                    </p>
+                </div>
+            </div>
+        
+        <!-- Botón de cerrar en la esquina -->
+        <button onclick="cerrarResumen()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; color: #666; cursor: pointer; padding: 5px; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
+            <i class="bi bi-x"></i>
+        </button>
+        <button onclick="cerrarResumen()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; color: #666; cursor: pointer; padding: 5px; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;"
+            onmouseover="this.style.backgroundColor='#f5f5f5'" 
+            onmouseout="this.style.backgroundColor='transparent'">
+            <i class="bi bi-x"></i>
+        </button>
     </div>
+</div>
     <!-- Wishlist Lateral -->
     <div class="wishlist-sidebar" id="wishlist-sidebar">
         <h2><i class="bi bi-heart"></i> Mi Lista de Deseos</h2>

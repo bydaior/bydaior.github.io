@@ -344,6 +344,8 @@ header {
     align-items: center;
     justify-content: center;
     gap: 8px;
+}
+.product-actions .btn-add {
     flex: 1;
 }
 
@@ -437,32 +439,111 @@ header {
     color: white;
 }
 
-/* --- MODAL RECIBO (ANIMADO) --- */
+/* MODIFICACIONES PARA MODAL SCROLLABLE */
 .modal-overlay {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%;
-    background: rgba(0,0,0,0.85); 
-    display: none; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 3000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    padding: 20px;
+    overflow: hidden;
 }
 
-.modal-overlay.active { 
-    display: flex; 
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 .modal-content {
-    background: white; 
-    padding: 30px; 
-    border-radius: 15px; 
-    width: 90%; 
-    max-width: 500px;
-    text-align: center; 
-    animation: fadeInScale 0.4s ease;
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    width: 100%;
+    max-width: 650px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: modalSlideIn 0.3s ease-out;
+    max-height: 90vh; /* Limita la altura máxima */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Animación para el modal */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Contenedor principal del contenido */
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-right: -5px;
+}
+
+/* Scrollbar personalizado */
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Ajustes para el summary-box */
+.summary-box {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 15px;
+    border: 1px solid #eaeaea;
+    overflow: visible;
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+    .modal-content {
+        max-width: 95%;
+        padding: 20px;
+        max-height: 85vh;
+    }
+    
+    .modal-overlay {
+        padding: 10px;
+    }
+}
+
+@media (max-height: 700px) {
+    .modal-content {
+        max-height: 80vh;
+    }
 }
 
 /* --- ORDEN DE COMPRA FORMAL BIEN ALINEADO --- */
@@ -540,6 +621,34 @@ header {
     flex: 1;
     text-align: right;
     font-weight: bold;
+}
+/* Estilos para filas alternadas en el resumen */
+.receipt-item-even {
+    background-color: #fafafa;
+}
+
+.receipt-item-odd {
+    background-color: #ffffff;
+}
+
+.receipt-item:hover {
+    background-color: #f0f7ff !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Asegurar que el modal esté siempre encima */
+.modal-overlay {
+    z-index: 10000;
+}
+
+/* Prevenir scroll del body cuando el modal está abierto */
+body.modal-open {
+    overflow: hidden;
+}
+
+/* Clase para cuando el modal está activo */
+.modal-open #overlay {
+    z-index: 9999;
 }
 
 .receipt-totals {
@@ -1418,5 +1527,174 @@ footer {
     
     .btn-wishlist, .btn-add, .btn-buy-now {
         width: 100%;
+    }
+}
+/* Estilos para el botón de PayPal */
+.paypal-btn-custom {
+    width: 100%;
+    margin: 15px 0;
+    border-radius: 8px !important;
+    min-height: 55px;
+}
+
+.paypal-button-tagline {
+    display: none !important;
+}
+
+.paypal-button-container {
+    width: 100% !important;
+    max-width: 400px !important;
+    margin: 0 auto !important;
+}
+
+/* Estilo alternativo para cuando no se puede cargar PayPal */
+.btn-paypal-manual {
+    background: linear-gradient(135deg, #0070ba 0%, #1546a0 100%);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    transition: all 0.3s ease;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(0, 112, 186, 0.3);
+}
+
+.btn-paypal-manual:hover {
+    background: linear-gradient(135deg, #005ea6 0%, #0d3a8c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 112, 186, 0.4);
+}
+
+.btn-paypal-manual:active {
+    transform: translateY(0);
+}
+
+.btn-paypal-manual i {
+    font-size: 1.2rem;
+}
+/* Estilos mejorados para el resumen dentro del modal */
+.receipt-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
+}
+
+.receipt-items {
+    margin-bottom: 20px;
+}
+
+.receipt-item {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    align-items: center;
+}
+
+.receipt-item:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.item-qty, .item-price, .item-total {
+    text-align: center;
+    font-family: 'Courier New', monospace;
+}
+
+.receipt-totals {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px dashed #ccc;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.total-row.final {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 2px solid var(--color-primary);
+}
+
+/* Estilos para los botones dentro del modal */
+.btn-enviar-orden {
+    background: var(--color-accent);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+.btn-descargar, .btn-enviar-orden:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(44, 62, 80, 0.3);
+}
+
+.btn-descargar {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+}
+
+.btn-descargar:hover {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(44, 62, 80, 0.3);
+}
+
+.btn-telegram {
+    background: linear-gradient(135deg, #0088cc 0%, #0077b5 100%);
+    color: white;
+}
+
+.btn-telegram:hover {
+    background: linear-gradient(135deg, #0077b5 0%, #0088cc 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 136, 204, 0.3);
+}
+
+/* Para dispositivos móviles */
+@media (max-width: 576px) {
+    .receipt-item {
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        font-size: 0.9rem;
+        gap: 5px;
+    }
+    
+    .item-name {
+        font-size: 0.85rem;
+    }
+    
+    .btn-descargar, .btn-telegram {
+        padding: 15px;
+        font-size: 0.95rem;
     }
 }
