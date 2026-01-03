@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completar Pago - Daior</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AeZGoX-wRZUnZVUyFdSzaAvFQro93wsgQDhY6HhgRSQUVDmuZpvcxhGJ3ZtE0kA2wMyTRvWsAzr05bAF&currency=USD"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .payment-container {
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .payment-header {
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .payment-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .payment-logo i {
+            color: #3b82f6;
+            font-size: 1.8rem;
+        }
+        
+        .payment-logo span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .payment-title {
+            font-size: 1.1rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .payment-content {
+            padding: 32px;
+        }
+        
+        .amount-section {
+            margin-bottom: 32px;
+        }
+        
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        
+        .amount-display {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .amount-display:focus-within {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .amount-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .currency {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+        
+        .amount-input {
+            width: 200px;
+            border: none;
+            background: transparent;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1e293b;
+            outline: none;
+            text-align: center;
+            padding: 0;
+        }
+        
+        .amount-input::placeholder {
+            color: #cbd5e1;
+        }
+        
+        .tip-section {
+            margin-bottom: 32px;
+        }
+        
+        .tip-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .tip-option {
+            padding: 16px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 52px;
+        }
+        
+        .tip-option:hover {
+            border-color: #3b82f6;
+        }
+        
+        .tip-option.selected {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .tip-custom {
+            position: relative;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .tip-custom-input {
+            width: 100%;
+            height: 100%;
+            padding: 16px 12px 16px 30px;
+            border: none;
+            text-align: center;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.2s;
+            background: transparent;
+        }
+        
+        .tip-custom-input:focus {
+            background: #eff6ff;
+        }
+        
+        .tip-custom .currency-tip {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-weight: 600;
+        }
+        
+        .summary-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        
+        .summary-row.total {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+            margin-top: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .summary-label {
+            color: #64748b;
+        }
+        
+        .summary-value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .summary-note {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        #paypal-button-container {
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 24px;
+        }
+        
+        .payment-footer {
+            padding: 24px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .security-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            flex-direction: column;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f1f5f9;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: 10px;
+            background-color: #10b981;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 400px;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.error {
+            background-color: #ef4444;
+        }
+        
+        /* ESTILOS PARA PANTALLA DE ÉXITO */
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+        
+        .success-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .success-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        
+        .success-message {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .transaction-details {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+        
+        .transaction-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .transaction-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .transaction-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .transaction-value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .btn-back-to-daior {
+            background: #8b5cf6;
+            color: white;
+            margin-top: 16px;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .btn-back-to-daior:hover {
+            background: #7c3aed;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background-color: #f0f;
+            top: 0;
+            opacity: 0;
+            z-index: 1001;
+            pointer-events: none;
+        }
+        
+        @keyframes confettiRain {
+            0% {
+                opacity: 1;
+                top: -100px;
+                transform: rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                top: 100vh;
+                transform: rotate(360deg);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .payment-container {
+                border-radius: 12px;
+            }
+            
+            .payment-content {
+                padding: 24px;
+            }
+            
+            .tip-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .amount-input {
+                font-size: 1.8rem;
+                width: 160px;
+            }
+            
+            .currency {
+                font-size: 1.6rem;
+            }
+            
+            .tip-option {
+                height: 48px;
+                padding: 12px 8px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <div class="payment-logo">
+                <i class="fas fa-bolt"></i>
+                <span>Pasarela de Pagos | Daior</span>
+            </div>
+            <div class="payment-title">Completa tu pago de forma segura</div>
+        </div>
+        
+        <div class="payment-content" id="paymentForm">
+            <div class="amount-section">
+                <div class="section-label">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>MONTO A PAGAR</span>
+                </div>
+                <div class="amount-display">
+                    <div class="amount-input-container">
+                        <span class="currency">$</span>
+                        <input type="number" 
+                               id="amountInput" 
+                               class="amount-input" 
+                               min="0.01" 
+                               max="10000" 
+                               step="0.01" 
+                               placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tip-section">
+                <div class="section-label">
+                    <i class="fas fa-heart"></i>
+                    <span>¿AGREGAR UNA PROPINA? (Opcional)</span>
+                </div>
+                <div class="tip-options">
+                    <div class="tip-option" data-tip="0">
+                        Sin propina
+                    </div>
+                    <div class="tip-option" data-tip="2">
+                        $2
+                    </div>
+                    <div class="tip-option" data-tip="5">
+                        $5
+                    </div>
+                    <div class="tip-option" data-tip="10">
+                        $10
+                    </div>
+                    <div class="tip-option" data-tip="15">
+                        $15
+                    </div>
+                    <div class="tip-option tip-custom">
+                        <span class="currency-tip">$</span>
+                        <input type="number" 
+                               id="customTipInput" 
+                               class="tip-custom-input" 
+                               min="0" 
+                               max="1000" 
+                               step="0.01" 
+                               placeholder="Otro">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="summary-section">
+                <div class="summary-row">
+                    <span class="summary-label">Subtotal</span>
+                    <span class="summary-value" id="subtotalDisplay">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Propina</span>
+                    <span class="summary-value" id="tipDisplay">$0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span class="summary-label">TOTAL A PAGAR</span>
+                    <span class="summary-value" id="totalDisplay">$0.00</span>
+                </div>
+                <div class="summary-note">
+                    * Todos los precios incluyen comisiones de PayPal
+                </div>
+            </div>
+            
+            <div id="paypal-button-container"></div>
+            
+            <!-- Texto informativo sobre métodos de pago -->
+            <div style="text-align: center; margin-top: 16px; color: #64748b; font-size: 0.9rem;">
+                <i class="fas fa-credit-card"></i> Puedes pagar con tarjeta sin necesidad de cuenta PayPal
+            </div>
+            
+            <!-- Mensaje de error para debugging -->
+            <div id="errorMessage" style="display: none; margin-top: 20px; padding: 15px; background: #fee; border-radius: 8px; color: #d32f2f; border-left: 4px solid #f44336;">
+                <strong><i class="fas fa-exclamation-triangle"></i> Error:</strong>
+                <span id="errorText"></span>
+            </div>
+        </div>
+        
+        <!-- Pantalla de éxito (oculta inicialmente) -->
+        <div class="success-screen" id="successScreen">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <h2 class="success-title">¡Pago Completado Exitosamente!</h2>
+            
+            <p class="success-message">
+                Gracias por tu compra. Tu pago ha sido procesado correctamente.<br>
+                Recibirás un correo de confirmación de PayPal en breve.
+            </p>
+            
+            <div class="transaction-details" id="transactionDetails">
+                <!-- Los detalles se llenarán con JavaScript -->
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="printReceiptBtn">
+                    <i class="fas fa-print"></i> Imprimir Recibo
+                </button>
+                <button class="btn btn-secondary" id="newPaymentBtn">
+                    <i class="fas fa-plus"></i> Nuevo Pago
+                </button>
+            </div>
+            
+            <!-- BOTÓN VOLVER A DAIOR -->
+            <a href="https://bydaior.github.io/" class="btn btn-back-to-daior" id="backToDaiorBtn">
+                <i class="fas fa-arrow-left"></i> Volver a Daior
+            </a>
+            
+            <div class="payment-footer" style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 24px;">
+                <div class="security-info">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Transacción verificada y segura</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="payment-footer" id="originalFooter">
+            <div class="security-info">
+                <i class="fas fa-lock"></i>
+                <span>Pago 100% seguro | PayPal</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Procesando pago...</p>
+    </div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText"></span>
+    </div>
+
+    <script>
+        // Variables globales
+        let baseAmount = 0.00;
+        let tipAmount = 0.00;
+        let selectedTipOption = null;
+        let lastTransactionDetails = null;
+        
+        // Elementos DOM
+        const amountInput = document.getElementById('amountInput');
+        const customTipInput = document.getElementById('customTipInput');
+        const tipOptions = document.querySelectorAll('.tip-option');
+        const subtotalDisplay = document.getElementById('subtotalDisplay');
+        const tipDisplay = document.getElementById('tipDisplay');
+        const totalDisplay = document.getElementById('totalDisplay');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+        const paymentForm = document.getElementById('paymentForm');
+        const successScreen = document.getElementById('successScreen');
+        const transactionDetails = document.getElementById('transactionDetails');
+        const printReceiptBtn = document.getElementById('printReceiptBtn');
+        const newPaymentBtn = document.getElementById('newPaymentBtn');
+        const backToDaiorBtn = document.getElementById('backToDaiorBtn');
+        const originalFooter = document.getElementById('originalFooter');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        
+        // Función para obtener parámetro de URL
+        function getUrlParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        
+        // Función para inicializar montos desde URL
+        function initializeAmountFromUrl() {
+            const urlAmount = getUrlParam('amount');
+            
+            if (urlAmount) {
+                const amount = parseFloat(urlAmount);
+                if (!isNaN(amount) && amount > 0) {
+                    baseAmount = amount;
+                    amountInput.value = amount.toFixed(2);
+                } else {
+                    baseAmount = 0.00;
+                    amountInput.value = '0.00';
+                }
+            } else {
+                baseAmount = 0.00;
+                amountInput.value = '0.00';
+            }
+            
+            updateSummary();
+        }
+        
+        // Función para calcular total (SIN COMISIÓN)
+        function calculateTotal() {
+            const subtotal = baseAmount + tipAmount;
+            const total = subtotal; // Sin comisión adicional
+            
+            return { subtotal, total };
+        }
+        
+        // Función para actualizar resumen
+        function updateSummary() {
+            const { subtotal, total } = calculateTotal();
+            
+            subtotalDisplay.textContent = `$${subtotal.toFixed(2)}`;
+            tipDisplay.textContent = `$${tipAmount.toFixed(2)}`;
+            totalDisplay.textContent = `$${total.toFixed(2)}`;
+            
+            // Actualizar base amount si es diferente del input
+            const inputValue = parseFloat(amountInput.value) || 0;
+            if (inputValue !== baseAmount) {
+                baseAmount = inputValue;
+            }
+        }
+        
+        // Función para seleccionar opción de propina
+        function selectTipOption(optionElement) {
+            // Deseleccionar todas las opciones
+            tipOptions.forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Seleccionar la nueva opción
+            optionElement.classList.add('selected');
+            selectedTipOption = optionElement;
+            
+            // Si es opción personalizada, enfocar el input
+            if (optionElement.classList.contains('tip-custom')) {
+                customTipInput.focus();
+                tipAmount = parseFloat(customTipInput.value) || 0;
+            } else {
+                // Usar el valor de data-tip
+                tipAmount = parseFloat(optionElement.dataset.tip) || 0;
+                customTipInput.value = '';
+            }
+            
+            updateSummary();
+        }
+        
+        // Función para mostrar notificación
+        function showNotification(message, type = 'success') {
+            notificationText.textContent = message;
+            
+            notification.className = 'notification';
+            if (type === 'error') {
+                notification.classList.add('error');
+                notification.querySelector('i').className = 'fas fa-exclamation-circle';
+            } else {
+                notification.querySelector('i').className = 'fas fa-check-circle';
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Función para mostrar error
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+            console.error('Error PayPal:', message);
+        }
+        
+        // Función para ocultar error
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+        
+        // Función para mostrar/ocultar loading
+        function showLoading(show) {
+            if (show) {
+                loadingOverlay.style.display = 'flex';
+                // Timeout de seguridad
+                setTimeout(() => {
+                    if (loadingOverlay.style.display === 'flex') {
+                        loadingOverlay.style.display = 'none';
+                        showNotification('Timeout: El proceso está tardando demasiado', 'error');
+                    }
+                }, 5000);
+            } else {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+        
+        // Función para mostrar pantalla de éxito
+        function showSuccessScreen(details) {
+            lastTransactionDetails = details;
+            
+            // Ocultar formulario de pago
+            paymentForm.style.display = 'none';
+            originalFooter.style.display = 'none';
+            hideError();
+            
+            // Mostrar pantalla de éxito
+            successScreen.style.display = 'block';
+            
+            // Llenar detalles de la transacción
+            const totalPaid = calculateTotal().total;
+            
+            transactionDetails.innerHTML = `
+                <div class="transaction-row">
+                    <span class="transaction-label">ID de Transacción:</span>
+                    <span class="transaction-value">${details.id}</span>
+                </div>
+                <div class="transaction-row">
+                    <span class="transaction-label">Monto Pagado:</span>
+                    <span class="transaction-value">$${totalPaid.toFixed(2)}</span>
+                </div>
+                <div class="transaction-row">
+                    <span class="transaction-label">Fecha y Hora:</span>
+                    <span class="transaction-value">${new Date().toLocaleString('es-ES', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}</span>
+                </div>
+                <div class="transaction-row">
+                    <span class="transaction-label">Estado:</span>
+                    <span class="transaction-value" style="color: #10b981;">${details.status.toUpperCase()}</span>
+                </div>
+                <div class="transaction-row">
+                    <span class="transaction-label">Método de Pago:</span>
+                    <span class="transaction-value">${details.payer?.email_address || 'Tarjeta/PayPal'}</span>
+                </div>
+            `;
+            
+            // Crear confetti
+            createConfetti();
+        }
+        
+        // Función para crear efecto confetti
+        function createConfetti() {
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+            
+            for (let i = 0; i < 80; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = confetti.style.width;
+                
+                confetti.style.animation = `confettiRain ${Math.random() * 3 + 2}s linear forwards`;
+                document.body.appendChild(confetti);
+                
+                // Remover después de la animación
+                setTimeout(() => {
+                    if (confetti.parentNode) {
+                        confetti.remove();
+                    }
+                }, 5000);
+            }
+        }
+        
+        // Función para imprimir recibo
+        function printReceipt() {
+            const printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Recibo de Pago - Daior</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: 0 auto; }
+                        .receipt-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+                        .receipt-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+                        .company-name { font-size: 18px; color: #666; }
+                        .receipt-details { margin: 30px 0; }
+                        .receipt-row { display: flex; justify-content: space-between; margin: 12px 0; padding: 8px 0; border-bottom: 1px solid #eee; }
+                        .receipt-total { border-top: 2px solid #000; padding-top: 15px; margin-top: 20px; font-weight: bold; font-size: 18px; }
+                        .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #666; line-height: 1.6; }
+                        .thank-you { font-size: 16px; color: #333; margin: 20px 0; }
+                        .note { font-size: 12px; color: #888; font-style: italic; margin-top: 5px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="receipt-header">
+                        <div class="receipt-title">RECIBO DE PAGO</div>
+                        <div class="company-name">Daior - Music Producer</div>
+                        <div>${new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                        <div>${new Date().toLocaleTimeString('es-ES')}</div>
+                    </div>
+                    
+                    <div class="receipt-details">
+                        <div class="receipt-row">
+                            <span>ID de Transacción:</span>
+                            <span>${lastTransactionDetails.id}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Monto Base:</span>
+                            <span>$${baseAmount.toFixed(2)}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Propina:</span>
+                            <span>$${tipAmount.toFixed(2)}</span>
+                        </div>
+                        <div class="note">Incluye comisiones de PayPal</div>
+                        <div class="receipt-row receipt-total">
+                            <span>TOTAL PAGADO:</span>
+                            <span>$${calculateTotal().total.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="thank-you">¡Gracias por tu compra!</div>
+                    
+                    <div class="footer">
+                        <p>Transacción procesada por PayPal</p>
+                        <p>Daior - Music Producer & Audio Mixing Engineer</p>
+                        <p>Visita: https://bydaior.github.io/</p>
+                        <p>Este recibo es válido como comprobante de pago</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            
+            setTimeout(() => {
+                printWindow.print();
+            }, 250);
+        }
+        
+        // Función para reiniciar el formulario
+        function resetPaymentForm() {
+            // Restaurar valores
+            const urlAmount = getUrlParam('amount');
+            baseAmount = urlAmount ? parseFloat(urlAmount) : 0.00;
+            tipAmount = 0.00;
+            amountInput.value = baseAmount.toFixed(2);
+            customTipInput.value = '';
+            
+            // Restaurar selección de propina
+            tipOptions.forEach(option => option.classList.remove('selected'));
+            const noTipOption = document.querySelector('.tip-option[data-tip="0"]');
+            if (noTipOption) noTipOption.classList.add('selected');
+            
+            // Actualizar resumen
+            updateSummary();
+            
+            // Mostrar formulario, ocultar éxito
+            paymentForm.style.display = 'block';
+            successScreen.style.display = 'none';
+            originalFooter.style.display = 'block';
+            hideError();
+            
+            // Enfocar input si está en 0
+            if (baseAmount === 0) {
+                setTimeout(() => amountInput.focus(), 100);
+            }
+        }
+        
+        // Inicializar PayPal - VERSIÓN SIMPLIFICADA Y CORREGIDA
+        function initializePayPal() {
+            if (typeof paypal === 'undefined') {
+                showError('No se pudo cargar el SDK de PayPal. Verifica tu conexión a internet.');
+                return;
+            }
+            
+            console.log('PayPal SDK cargado correctamente');
+            
+            try {
+                paypal.Buttons({
+                    style: {
+                        shape: 'pill',
+                        color: 'gold',
+                        layout: 'vertical',
+                        label: 'pay',
+                        height: 48,
+                        tagline: false
+                    },
+                    
+                    // VALIDACIÓN ANTES DE CREAR LA ORDEN
+                    onClick: function(data, actions) {
+                        const { total } = calculateTotal();
+                        
+                        console.log('Validando pago, monto total:', total);
+                        
+                        if (total < 0.01) {
+                            showNotification('El monto mínimo es $0.01', 'error');
+                            return false;
+                        }
+                        
+                        if (baseAmount <= 0) {
+                            showNotification('Por favor, ingresa un monto válido', 'error');
+                            return false;
+                        }
+                        
+                        // Validar formato del monto
+                        if (isNaN(total) || !isFinite(total)) {
+                            showNotification('Monto inválido', 'error');
+                            return false;
+                        }
+                        
+                        hideError();
+                        return true;
+                    },
+                    
+                    // CREAR ORDEN - FORMATO CORREGIDO
+                    createOrder: function(data, actions) {
+                        const { total } = calculateTotal();
+                        const amountValue = total.toFixed(2);
+                        
+                        console.log('Creando orden PayPal, monto:', amountValue);
+                        
+                        // Validar nuevamente
+                        if (total < 0.01 || baseAmount <= 0) {
+                            showNotification('Monto inválido', 'error');
+                            return Promise.reject('Monto inválido');
+                        }
+                        
+                        showLoading(true);
+                        
+                        // FORMATO SIMPLIFICADO Y CORRECTO PARA PAYPAL
+                        return actions.order.create({
+                            purchase_units: [{
+                                amount: {
+                                    currency_code: "USD",
+                                    value: amountValue
+                                },
+                                description: "Pago para Daior - Music Producer"
+                            }]
+                        }).then(function(orderID) {
+                            console.log('Orden creada exitosamente:', orderID);
+                            return orderID;
+                        }).catch(function(error) {
+                            console.error('Error creando orden:', error);
+                            showLoading(false);
+                            showError('Error al crear la orden: ' + (error.message || 'Error desconocido'));
+                            showNotification('Error al crear la orden de pago', 'error');
+                            return Promise.reject(error);
+                        });
+                    },
+                    
+                    // CAPTURAR PAGO
+                    onApprove: function(data, actions) {
+                        console.log('Pago aprobado, capturando orden ID:', data.orderID);
+                        
+                        return actions.order.capture().then(function(details) {
+                            console.log('Pago capturado exitosamente:', details);
+                            showLoading(false);
+                            
+                            // Mostrar pantalla de éxito
+                            showSuccessScreen(details);
+                            
+                            // Mostrar notificación
+                            showNotification('¡Pago exitoso! Gracias por tu compra.', 'success');
+                            
+                        }).catch(function(error) {
+                            console.error('Error capturando pago:', error);
+                            showLoading(false);
+                            showError('Error al procesar el pago: ' + (error.message || 'Error desconocido'));
+                            showNotification('Error al procesar el pago', 'error');
+                        });
+                    },
+                    
+                    // MANEJO DE ERRORES
+                    onError: function(err) {
+                        console.error('Error general de PayPal:', err);
+                        showLoading(false);
+                        showError('Error de PayPal: ' + (err.message || 'Error desconocido'));
+                        showNotification('Error en el procesamiento del pago', 'error');
+                    },
+                    
+                    // MANEJO DE CANCELACIÓN
+                    onCancel: function(data) {
+                        console.log('Pago cancelado por el usuario');
+                        showLoading(false);
+                        showNotification('Pago cancelado', 'info');
+                    }
+                    
+                }).render('#paypal-button-container').then(function() {
+                    console.log('Botón PayPal renderizado exitosamente');
+                }).catch(function(error) {
+                    console.error('Error renderizando botón PayPal:', error);
+                    showError('Error al cargar el botón de pago: ' + (error.message || 'Error desconocido'));
+                });
+                
+            } catch (error) {
+                console.error('Error inicializando PayPal:', error);
+                showError('Error inicializando PayPal: ' + error.message);
+                showNotification('Error al cargar el sistema de pagos', 'error');
+            }
+        }
+        
+        // Event Listeners
+        amountInput.addEventListener('input', function() {
+            const value = parseFloat(this.value) || 0;
+            
+            if (value >= 0 && value <= 10000) {
+                baseAmount = value;
+                updateSummary();
+                hideError();
+            } else if (value > 10000) {
+                showNotification('El monto máximo es $10,000', 'error');
+                this.value = '10000';
+                baseAmount = 10000;
+                updateSummary();
+            }
+        });
+        
+        amountInput.addEventListener('blur', function() {
+            if (!this.value || parseFloat(this.value) < 0) {
+                this.value = '0.00';
+                baseAmount = 0.00;
+                updateSummary();
+            }
+        });
+        
+        // Event listeners para opciones de propina
+        tipOptions.forEach(option => {
+            if (!option.classList.contains('tip-custom')) {
+                option.addEventListener('click', function() {
+                    selectTipOption(this);
+                });
+            }
+        });
+        
+        // Event listener para propina personalizada
+        const tipCustomElement = document.querySelector('.tip-custom');
+        tipCustomElement.addEventListener('click', function() {
+            selectTipOption(this);
+        });
+        
+        customTipInput.addEventListener('input', function() {
+            if (selectedTipOption && selectedTipOption.classList.contains('tip-custom')) {
+                tipAmount = parseFloat(this.value) || 0;
+                updateSummary();
+            }
+        });
+        
+        customTipInput.addEventListener('focus', function() {
+            selectTipOption(tipCustomElement);
+        });
+        
+        // Event Listeners para botones
+        printReceiptBtn.addEventListener('click', printReceipt);
+        newPaymentBtn.addEventListener('click', resetPaymentForm);
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM cargado, inicializando...');
+            initializeAmountFromUrl();
+            
+            // Esperar a que todo esté listo
+            setTimeout(function() {
+                initializePayPal();
+            }, 1000);
+            
+            // Seleccionar "Sin propina" por defecto
+            const noTipOption = document.querySelector('.tip-option[data-tip="0"]');
+            if (noTipOption) {
+                selectTipOption(noTipOption);
+            }
+            
+            // Enfocar el input del monto si está en 0
+            if (baseAmount === 0) {
+                setTimeout(() => {
+                    amountInput.focus();
+                }, 500);
+            }
+        });
+        
+    </script>
+</body>
+</html>
