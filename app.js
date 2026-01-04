@@ -1,5 +1,6 @@
 // VARIABLE PARA NOMBRE DINÁMICO DEL COMERCIO
 const nombreTienda = "Daior";
+const myInstagram = "@daior_";
 
 // Productos con ofertas especiales
 const productos = [
@@ -1116,8 +1117,8 @@ function inicializarPayPal() {
         paypalButtonsInstance = paypal.Buttons({
             style: {
                 layout: 'vertical',
-                color: 'blue',
-                shape: 'rect',
+                color: 'gold',
+                shape: 'pill',
                 label: 'paypal',
                 tagline: false,
                 height: 55
@@ -1438,8 +1439,7 @@ function abrirResumen() {
         </div>
         <div style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: #666; border-top: 1px dashed #ccc; padding-top: 10px;">
             <strong>${nombreTienda}</strong><br>
-            Caracas, Venezuela<br>
-            Teléfono: +58 412-XXXXXXX<br>
+            <i class="bi bi-instagram"></i> ${myInstagram}<br>
             Gracias por su compra!
         </div>
     `;
