@@ -356,7 +356,7 @@ header {
 
 /* --- NUEVO: Botón Comprar Ahora --- */
 .btn-buy-now {
-    background: var(--color-success); 
+    background: var(--color-tg); 
     color: white; 
     border: none;
     padding: 12px; 
@@ -372,7 +372,6 @@ header {
 }
 
 .btn-buy-now:hover {
-    background: #219653;
     transform: scale(1.02);
 }
 
