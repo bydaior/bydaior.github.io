@@ -103,14 +103,14 @@
             letter-spacing: 2px;
         }
         
+        /* Subtítulo más pequeño */
         .profile-subtitle {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.2rem;
+            font-size: 1rem; /* Reducido de 1.2rem a 1rem */
             font-weight: 500;
             color: rgba(255, 255, 255, 0.9);
             margin-bottom: 0;
-            letter-spacing: 1px;
-            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px; /* Reducido de 1px */
         }
         
         /* Etiqueta de categoría */
@@ -122,7 +122,7 @@
             padding: 5px 15px;
             border-radius: 20px;
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.80rem;
             font-weight: 600;
             color: white;
             margin-top: 10px;
@@ -209,11 +209,43 @@
             border: 1px solid var(--accent-color);
         }
         
-        .track-info-header {
+        /* Contenedor de información del track con carátula */
+        .track-info-container {
             display: flex;
-            justify-content: space-between;
             align-items: flex-start;
+            gap: 20px;
             margin-bottom: 15px;
+        }
+        
+        /* Carátula del track */
+        .track-cover {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #2d2d2d 0%, #4a4a4a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .track-cover i {
+            font-size: 30px;
+            color: var(--text-secondary);
+        }
+        
+        .track-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .track-info {
+            flex-grow: 1;
         }
         
         .track-title {
@@ -513,6 +545,22 @@
                 font-size: 2rem;
             }
             
+            .profile-subtitle {
+                font-size: 0.95rem;
+            }
+            
+            .track-info-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .track-cover {
+                width: 70px;
+                height: 70px;
+            }
+            
             .nav-link {
                 padding: 14px 15px;
                 font-size: 0.9rem;
@@ -528,11 +576,6 @@
             
             .player-controls {
                 padding: 15px;
-            }
-            
-            .track-info-header {
-                flex-direction: column;
-                gap: 10px;
             }
             
             .track-title {
@@ -598,8 +641,12 @@
         <div class="player-section">
             <!-- Controles del reproductor con título integrado -->
             <div class="player-controls">
-                <div class="track-info-header">
-                    <div>
+                <!-- Información del track con carátula -->
+                <div class="track-info-container">
+                    <div class="track-cover" id="current-track-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="track-info">
                         <div class="track-title" id="current-track-title">Selecciona un track</div>
                         <div class="track-details">
                             <div class="track-artist" id="current-track-artist">Daior</div>
@@ -672,13 +719,14 @@
     </div>
 
     <script>
-        // Datos de la playlist - Ya no necesitas especificar la duración manualmente
+        // Datos de la playlist con carátulas
         const playlist = [
             {
                 title: "Miami",
                 artist: "Daior",
                 category: "Producción",
                 src: "tracks/Reggaeton%20-%20Anoche%2097bpm%20C%23min%20(Stream).mp3",
+                cover: "covers/miami.jpg", // Ruta a la carátula
                 type: "mp3"
             },
             {
@@ -686,6 +734,7 @@
                 artist: "Daior ft. Maya",
                 category: "Mezcla",
                 src: "https://assets.mixkit.co/music/preview/mixkit-driving-ambition-32.mp3",
+                cover: "covers/neon-dreams.jpg", // Ruta a la carátula
                 type: "mp3"
             },
             {
@@ -693,6 +742,7 @@
                 artist: "Daior",
                 category: "Mastering",
                 src: "https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3",
+                cover: "covers/echoes.jpg", // Ruta a la carátula
                 type: "mp3"
             },
             {
@@ -700,6 +750,7 @@
                 artist: "Daior",
                 category: "Producción",
                 src: "https://assets.mixkit.co/music/preview/mixkit-summer-breeze-3.mp3",
+                cover: "covers/solar-flare.jpg", // Ruta a la carátula
                 type: "mp3"
             },
             {
@@ -707,6 +758,7 @@
                 artist: "Daior",
                 category: "Mezcla",
                 src: "https://assets.mixkit.co/music/preview/mixkit-cool-vibes-66.mp3", 
+                cover: "covers/liquid-crystal.jpg", // Ruta a la carátula
                 type: "mp3"
             },
             {
@@ -714,6 +766,7 @@
                 artist: "Daior",
                 category: "Producción",
                 src: "https://assets.mixkit.co/music/preview/mixkit-futuristic-beat-166.mp3",
+                cover: "covers/urban-legends.jpg", // Ruta a la carátula
                 type: "mp3"
             }
         ];
@@ -731,6 +784,7 @@
         const currentTrackTitle = document.getElementById('current-track-title');
         const currentTrackArtist = document.getElementById('current-track-artist');
         const currentTrackCategory = document.getElementById('current-track-category');
+        const currentTrackCover = document.getElementById('current-track-cover');
         const playlistItems = document.getElementById('playlist-items');
         const playlistCount = document.getElementById('playlist-count');
         
@@ -808,6 +862,27 @@
             });
         }
         
+        // Cargar carátula de track
+        function loadTrackCover(coverElement, coverUrl) {
+            if (coverUrl) {
+                const img = new Image();
+                img.src = coverUrl;
+                img.onload = function() {
+                    // Limpiar el contenedor
+                    coverElement.innerHTML = '';
+                    // Añadir la imagen
+                    coverElement.appendChild(img);
+                };
+                img.onerror = function() {
+                    // Si falla la carga, mantener el icono
+                    coverElement.innerHTML = '<i class="fas fa-music"></i>';
+                };
+            } else {
+                // Si no hay carátula, usar icono por defecto
+                coverElement.innerHTML = '<i class="fas fa-music"></i>';
+            }
+        }
+        
         // Inicializar playlist
         function initPlaylist() {
             playlistItems.innerHTML = '';
@@ -858,6 +933,9 @@
             currentTrackTitle.textContent = track.title;
             currentTrackArtist.textContent = track.artist;
             currentTrackCategory.textContent = track.category;
+            
+            // Cargar carátula
+            loadTrackCover(currentTrackCover, track.cover);
             
             // Asegurar que el botón muestre "play" (estado pausado)
             isPlaying = false;
