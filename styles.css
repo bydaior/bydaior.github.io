@@ -356,7 +356,7 @@ header {
 
 /* --- NUEVO: Botón Comprar Ahora --- */
 .btn-buy-now {
-    background: var(--color-tg); 
+    background: linear-gradient(90deg,rgba(0, 115, 255, 1) 0%, rgba(113, 87, 199, 1) 55%, rgba(255, 97, 97, 1) 100%);
     color: white; 
     border: none;
     padding: 12px; 

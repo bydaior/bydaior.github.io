@@ -1,6 +1,7 @@
 // VARIABLE PARA NOMBRE DINÁMICO DEL COMERCIO
 const nombreTienda = "Daior";
 const myInstagram = "@daior_";
+const myLocation = "X Planet";
 
 // Productos con ofertas especiales
 const productos = [
@@ -87,6 +88,7 @@ function actualizarNombreTienda() {
     document.getElementById('titulo-pagina').textContent = nombreTienda;
     document.getElementById('header-titulo').textContent = `🍃 ${nombreTienda}`;
     document.getElementById('footer-titulo').textContent = `🍃 ${nombreTienda}`;
+    document.getElementById('myLocation').textContent = `${myLocation}`;
     
     // Actualizar en el resumen de pedido (se actualiza en tiempo real cuando se genera)
     const summaryElements = document.querySelectorAll('.summary-box strong');
