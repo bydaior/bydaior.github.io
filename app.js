@@ -1596,7 +1596,7 @@ function procesarEnvioTelegramManual() {
                     </div>
                 `,
                 icon: 'success',
-                confirmButtonText: 'Volver a la tienda',
+                confirmButtonText: 'Ir a Telegram',
                 confirmButtonColor: '#2c3e50',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
@@ -1608,9 +1608,9 @@ function procesarEnvioTelegramManual() {
                     popup: 'swal2-popup'
                 }
             }).then((result) => {
-                // Cuando el usuario haga clic en "Volver a la tienda"
+                // Cuando el usuario haga clic en "Ir a Telegram"
                 // Redirigir a Telegram en nueva pestaña
-                window.open('https://t.me/joshgtz', '_blank');
+                window.open('https://t.me/dai0r', '_blank');
                 // La alerta se cierra automáticamente al hacer clic
             });
         } else {
