@@ -1318,7 +1318,7 @@ function mostrarConfirmacionPagoExitoso(details) {
         confirmButtonText: 'Enviar detalles a Telegram',
         confirmButtonColor: '#0088cc',
         showCancelButton: true,
-        cancelButtonText: 'Volver a la tienda',
+        cancelButtonText: 'Ir a Telegram',
         allowOutsideClick: false,
         customClass: {
             container: 'swal2-container',
@@ -1327,7 +1327,7 @@ function mostrarConfirmacionPagoExitoso(details) {
     }).then((result) => {
         if (result.isConfirmed) {
             // Redirigir a Telegram
-            window.open('https://t.me/joshgtz', '_blank');
+            window.open('https://t.me/dai0r', '_blank');
             
             // Mostrar mensaje final
             Swal.fire({
