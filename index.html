@@ -6,7 +6,7 @@
     <title>Daior | Shop Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.paypal.com/sdk/js?client-id=Ab0b1huR_F-Cw51822qKzSaV7pc2XRKGfLhArxSVQ2mnjSw48O2olGo3SU31K4ttsFIuew00m5rJOH4N&currency=USD"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -177,9 +177,11 @@
             </div>
 
             <div class="bg-zinc-100 p-6 rounded-b-3xl grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button onclick="downloadPDF()" class="flex items-center justify-center gap-2 py-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-black transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    Descargar PDF
+                <button onclick="downloadPNG()" class="flex items-center justify-center gap-2 py-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-black transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Descargar Recibo (PNG)
                 </button>
                 <button onclick="sendInvoiceToWhatsApp()" class="flex items-center justify-center gap-2 py-4 bg-[#25D366] text-black rounded-2xl font-bold hover:opacity-90 transition-all">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.204l-.651 2.375 2.431-.637c.901.491 1.837.753 2.965.753 3.18 0 5.767-2.586 5.768-5.766 0-3.18-2.587-5.795-5.77-5.795z"/></svg>

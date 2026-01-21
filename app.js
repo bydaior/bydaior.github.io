@@ -93,33 +93,48 @@ function processEmailSubmission() {
     updateCart();
 }
 
-// 3. DESCARGAR PDF
-function downloadPDF() {
+// 3. DESCARGAR PNG
+function downloadPNG() {
     const element = document.getElementById('invoice-content');
+    const invoiceId = document.getElementById('invoice-id').textContent.trim().replace('#', '');
+    const fileName = `Daior_Receipt_${invoiceId}.png`;
     
-    // Mostramos un mensaje simple de "Generando..." si deseas
     const btn = event.currentTarget;
     const originalText = btn.innerHTML;
-    btn.innerText = "Generando PDF...";
+    btn.innerText = "Generando Imagen...";
 
-    const opt = {
-        margin: [10, 10],
-        filename: `Daior_Recibo_${document.getElementById('invoice-id').textContent}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-            scale: 3, // Aumentamos la escala para mayor nitidez
-            letterRendering: true,
-            useCORS: true 
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    // Ejecutamos con un pequeño retraso para asegurar que el DOM esté listo
-    setTimeout(() => {
-        html2pdf().set(opt).from(element).save().then(() => {
-            btn.innerHTML = originalText;
-        });
-    }, 500);
+    // Configuramos la captura
+    html2canvas(element, {
+        scale: 3, // Alta calidad
+        useCORS: true,
+        backgroundColor: "#ffffff", // Fondo blanco sólido
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight
+    }).then(canvas => {
+        // Convertimos el canvas a una URL de imagen
+        const image = canvas.toDataURL("image/png");
+        
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // En móviles, abrimos la imagen en una pestaña nueva
+            // El usuario solo debe dejar presionado y "Guardar imagen"
+            const newWindow = window.open();
+            newWindow.document.write(`<img src="${image}" style="width:100%;" />`);
+            newWindow.document.title = fileName;
+        } else {
+            // En PC, forzamos la descarga automática
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = image;
+            link.click();
+        }
+        
+        btn.innerHTML = originalText;
+    }).catch(err => {
+        console.error("Error al generar PNG:", err);
+        btn.innerText = "Error";
+    });
 }
 
 // 4. ENVIAR RECIBO A WHATSAPP
@@ -136,7 +151,7 @@ function sendInvoiceToWhatsApp() {
     message += `*Enviar a:* ${email}\n`;
     message += `*Monto:* ${total}\n`;
     message += `--------------------------------\n`;
-    message += `_He realizado mi pago por PayPal y adjunto mi recibo PDF._`;
+    message += `_He realizado mi pago por PayPal y adjunto mi recibo._`;
 
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${WS_NUMBER.replace('+', '')}?text=${encoded}`, '_blank');
