@@ -1,8 +1,3 @@
-// VARIABLE PARA NOMBRE DINÁMICO DEL COMERCIO
-const nombreTienda = "Daior";
-const myInstagram = "@daior_";
-const myLocation = "X Planet";
-
 // Base de Datos de Productos
 const products = [
     { id: 1, name: "Vocal Mixing", price: 49.99, category: "Servicios", image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=500", desc: "Producción exclusiva adaptada a tu estilo." },
