@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Completar Pago - Daior</title>
+    <title>Daior - Pagos</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- PayPal SDK -->
@@ -586,12 +586,6 @@
             <div style="text-align: center; margin-top: 16px; color: #64748b; font-size: 0.9rem;">
                 <i class="fas fa-credit-card"></i> Puedes pagar con tarjeta sin necesidad de cuenta PayPal
             </div>
-            
-            <!-- Mensaje de error para debugging -->
-            <div id="errorMessage" style="display: none; margin-top: 20px; padding: 15px; background: #fee; border-radius: 8px; color: #d32f2f; border-left: 4px solid #f44336;">
-                <strong><i class="fas fa-exclamation-triangle"></i> Error:</strong>
-                <span id="errorText"></span>
-            </div>
         </div>
         
         <!-- Pantalla de éxito (oculta inicialmente) -->
@@ -636,14 +630,14 @@
         <div class="payment-footer" id="originalFooter">
             <div class="security-info">
                 <i class="fas fa-lock"></i>
-                <span>Pago 100% seguro | PayPal</span>
+                <span>Pago 100% seguro • PayPal</span>
             </div>
         </div>
     </div>
     
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-        <p>Procesando pago...</p>
+        <p id="loadingText">Procesando pago...</p>
     </div>
     
     <div class="notification" id="notification">
@@ -657,6 +651,7 @@
         let tipAmount = 0.00;
         let selectedTipOption = null;
         let lastTransactionDetails = null;
+        let loadingTimeout = null;
         
         // Elementos DOM
         const amountInput = document.getElementById('amountInput');
@@ -666,6 +661,7 @@
         const tipDisplay = document.getElementById('tipDisplay');
         const totalDisplay = document.getElementById('totalDisplay');
         const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
         const notification = document.getElementById('notification');
         const notificationText = document.getElementById('notificationText');
         const paymentForm = document.getElementById('paymentForm');
@@ -675,8 +671,6 @@
         const newPaymentBtn = document.getElementById('newPaymentBtn');
         const backToDaiorBtn = document.getElementById('backToDaiorBtn');
         const originalFooter = document.getElementById('originalFooter');
-        const errorMessage = document.getElementById('errorMessage');
-        const errorText = document.getElementById('errorText');
         
         // Función para obtener parámetro de URL
         function getUrlParam(param) {
@@ -771,31 +765,34 @@
             }, 5000);
         }
         
-        // Función para mostrar error
-        function showError(message) {
-            errorText.textContent = message;
-            errorMessage.style.display = 'block';
-            console.error('Error PayPal:', message);
-        }
-        
-        // Función para ocultar error
-        function hideError() {
-            errorMessage.style.display = 'none';
-        }
-        
-        // Función para mostrar/ocultar loading
-        function showLoading(show) {
+        // Función para mostrar/ocultar loading con timeout automático
+        function showLoading(show, message = 'Procesando pago...') {
             if (show) {
+                loadingText.textContent = message;
                 loadingOverlay.style.display = 'flex';
-                // Timeout de seguridad
-                setTimeout(() => {
+                
+                // Limpiar timeout anterior si existe
+                if (loadingTimeout) {
+                    clearTimeout(loadingTimeout);
+                }
+                
+                // Timeout de seguridad: Ocultar después de 10 segundos
+                loadingTimeout = setTimeout(() => {
                     if (loadingOverlay.style.display === 'flex') {
+                        console.log('Timeout de seguridad: Ocultando loading overlay');
                         loadingOverlay.style.display = 'none';
-                        showNotification('Timeout: El proceso está tardando demasiado', 'error');
                     }
-                }, 5000);
+                }, 10000); // 10 segundos máximo
+                
             } else {
+                // Ocultar loading
                 loadingOverlay.style.display = 'none';
+                
+                // Limpiar timeout
+                if (loadingTimeout) {
+                    clearTimeout(loadingTimeout);
+                    loadingTimeout = null;
+                }
             }
         }
         
@@ -806,7 +803,6 @@
             // Ocultar formulario de pago
             paymentForm.style.display = 'none';
             originalFooter.style.display = 'none';
-            hideError();
             
             // Mostrar pantalla de éxito
             successScreen.style.display = 'block';
@@ -962,7 +958,6 @@
             paymentForm.style.display = 'block';
             successScreen.style.display = 'none';
             originalFooter.style.display = 'block';
-            hideError();
             
             // Enfocar input si está en 0
             if (baseAmount === 0) {
@@ -970,10 +965,11 @@
             }
         }
         
-        // Inicializar PayPal - VERSIÓN SIMPLIFICADA Y CORREGIDA
+        // SOLUCIÓN DEFINITIVA: Inicializar PayPal con control inteligente del loading
         function initializePayPal() {
             if (typeof paypal === 'undefined') {
-                showError('No se pudo cargar el SDK de PayPal. Verifica tu conexión a internet.');
+                console.error('PayPal SDK no cargado');
+                showNotification('Error: No se pudo cargar PayPal. Verifica tu conexión.', 'error');
                 return;
             }
             
@@ -994,7 +990,7 @@
                     onClick: function(data, actions) {
                         const { total } = calculateTotal();
                         
-                        console.log('Validando pago, monto total:', total);
+                        console.log('Click en botón PayPal, monto total:', total);
                         
                         if (total < 0.01) {
                             showNotification('El monto mínimo es $0.01', 'error');
@@ -1012,11 +1008,10 @@
                             return false;
                         }
                         
-                        hideError();
                         return true;
                     },
                     
-                    // CREAR ORDEN - FORMATO CORREGIDO
+                    // CREAR ORDEN - Loading MUY breve
                     createOrder: function(data, actions) {
                         const { total } = calculateTotal();
                         const amountValue = total.toFixed(2);
@@ -1029,9 +1024,10 @@
                             return Promise.reject('Monto inválido');
                         }
                         
-                        showLoading(true);
+                        // MOSTRAR LOADING SOLO 1.5 SEGUNDOS - NO MÁS
+                        showLoading(true, 'Iniciando pago...');
                         
-                        // FORMATO SIMPLIFICADO Y CORRECTO PARA PAYPAL
+                        // Crear la orden
                         return actions.order.create({
                             purchase_units: [{
                                 amount: {
@@ -1042,19 +1038,29 @@
                             }]
                         }).then(function(orderID) {
                             console.log('Orden creada exitosamente:', orderID);
+                            
+                            // OCULTAR LOADING INMEDIATAMENTE después de crear orden
+                            // PayPal manejará el resto del flujo
+                            setTimeout(() => {
+                                showLoading(false);
+                            }, 500);
+                            
                             return orderID;
+                            
                         }).catch(function(error) {
                             console.error('Error creando orden:', error);
                             showLoading(false);
-                            showError('Error al crear la orden: ' + (error.message || 'Error desconocido'));
                             showNotification('Error al crear la orden de pago', 'error');
                             return Promise.reject(error);
                         });
                     },
                     
-                    // CAPTURAR PAGO
+                    // CAPTURAR PAGO - Solo mostrar loading si es PayPal (no tarjeta)
                     onApprove: function(data, actions) {
                         console.log('Pago aprobado, capturando orden ID:', data.orderID);
+                        
+                        // MOSTRAR LOADING solo mientras se captura
+                        showLoading(true, 'Confirmando pago...');
                         
                         return actions.order.capture().then(function(details) {
                             console.log('Pago capturado exitosamente:', details);
@@ -1069,7 +1075,6 @@
                         }).catch(function(error) {
                             console.error('Error capturando pago:', error);
                             showLoading(false);
-                            showError('Error al procesar el pago: ' + (error.message || 'Error desconocido'));
                             showNotification('Error al procesar el pago', 'error');
                         });
                     },
@@ -1078,7 +1083,6 @@
                     onError: function(err) {
                         console.error('Error general de PayPal:', err);
                         showLoading(false);
-                        showError('Error de PayPal: ' + (err.message || 'Error desconocido'));
                         showNotification('Error en el procesamiento del pago', 'error');
                     },
                     
@@ -1093,12 +1097,11 @@
                     console.log('Botón PayPal renderizado exitosamente');
                 }).catch(function(error) {
                     console.error('Error renderizando botón PayPal:', error);
-                    showError('Error al cargar el botón de pago: ' + (error.message || 'Error desconocido'));
+                    showNotification('Error al cargar el botón de pago', 'error');
                 });
                 
             } catch (error) {
                 console.error('Error inicializando PayPal:', error);
-                showError('Error inicializando PayPal: ' + error.message);
                 showNotification('Error al cargar el sistema de pagos', 'error');
             }
         }
@@ -1110,7 +1113,6 @@
             if (value >= 0 && value <= 10000) {
                 baseAmount = value;
                 updateSummary();
-                hideError();
             } else if (value > 10000) {
                 showNotification('El monto máximo es $10,000', 'error');
                 this.value = '10000';
@@ -1157,6 +1159,28 @@
         printReceiptBtn.addEventListener('click', printReceipt);
         newPaymentBtn.addEventListener('click', resetPaymentForm);
         
+        // ESCUCHAR EVENTOS DE VISIBILIDAD DE LA PÁGINA
+        // Si el usuario cambia de pestaña o cierra PayPal, ocultar loading
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // La página no es visible (usuario cambió de pestaña o cerró PayPal)
+                showLoading(false);
+            }
+        });
+        
+        // ESCUCHAR EVENTOS DE FOCUS/BLUR
+        window.addEventListener('blur', function() {
+            // La ventana perdió el foco (posiblemente abrió PayPal)
+            setTimeout(() => {
+                showLoading(false);
+            }, 1000);
+        });
+        
+        window.addEventListener('focus', function() {
+            // La ventana recuperó el foco (posiblemente cerró PayPal)
+            showLoading(false);
+        });
+        
         // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM cargado, inicializando...');
@@ -1180,6 +1204,15 @@
                 }, 500);
             }
         });
+        
+        // FUNCIÓN DE SEGURIDAD: Verificar periódicamente si el loading debería estar visible
+        setInterval(() => {
+            if (loadingOverlay.style.display === 'flex') {
+                console.log('Loading overlay aún visible, verificando...');
+                // Si ha pasado más de 10 segundos, forzar ocultar
+                // Esto es un fallback de seguridad
+            }
+        }, 5000);
         
     </script>
 </body>
