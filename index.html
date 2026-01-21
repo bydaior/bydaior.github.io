@@ -3,1080 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daior - Music Producer & Audio Mixing Engineer</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts - Montserrat (moderna) -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Daior | Shop Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=Ab0b1huR_F-Cw51822qKzSaV7pc2XRKGfLhArxSVQ2mnjSw48O2olGo3SU31K4ttsFIuew00m5rJOH4N&currency=USD"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #0a0a0a;
-            --bg-medium: #1a1a1a;
-            --bg-light: #2d2d2d;
-            --text-primary: #ffffff;
-            --text-secondary: #cccccc;
-            --accent-color: #3a3a3a;
-            --highlight-color: #4a4a4a;
-            --accent-blue: #0FF4C6;
-            --dark-blue: #001a14;
-            --menu-bg: #151515;
-        }
-        
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .portfolio-container {
-            max-width: 600px;
-            width: 100%;
-            background-color: var(--bg-medium);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        
-        /* Encabezado con degradado */
-        .header-section {
-            background: linear-gradient(90deg,rgba(20, 20, 20, 1) 0%, rgb(82, 82, 82) 100%);
-            padding: 25px 30px;
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Efecto de brillo en el fondo */
-        .header-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(90deg,rgba(20, 20, 20, 1) 0%, rgb(65, 65, 65) 100%);
-            z-index: 1;
-        }
-        
-        .profile-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid rgba(255, 255, 255, 0.8);
-            background-color: rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            position: relative;
-            z-index: 2;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .profile-img i {
-            font-size: 40px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-        
-        .header-info {
-            flex-grow: 1;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .profile-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 2.4rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 5px;
-            letter-spacing: 2px;
-        }
-        
-        /* Subtítulo más pequeño */
-        .profile-subtitle {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem; /* Reducido de 1.2rem a 1rem */
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 0;
-            letter-spacing: 0.5px; /* Reducido de 1px */
-        }
-        
-        /* Etiqueta de categoría */
-        .category-tag {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.80rem;
-            font-weight: 600;
-            color: white;
-            margin-top: 10px;
-            letter-spacing: 0.5px;
-        }
-        
-        /* Menú horizontal */
-        .menu-section {
-            background-color: var(--menu-bg);
-            padding: 0;
-            border-bottom: 1px solid var(--accent-color);
-        }
-        
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .nav-item {
-            flex: 1;
-            text-align: center;
-        }
-        
-        .nav-link {
-            display: block;
-            padding: 16px 20px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .nav-link:hover {
-            color: var(--text-primary);
-            background-color: rgba(255, 255, 255, 0.05);
-            border-bottom-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .nav-link.active {
-            color: var(--text-primary);
-            border-bottom-color: var(--accent-blue);
-            background-color: rgba(15, 244, 198, 0.05);
-        }
-        
-        .nav-link i {
-            margin-right: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, rgba(15, 244, 198, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .nav-link:hover::after {
-            opacity: 1;
-        }
-        
-        /* Reproductor Compacto */
-        .player-section {
-            padding: 20px 30px 30px;
-        }
-        
-        /* Controles del reproductor con título */
-        .player-controls {
-            background-color: var(--bg-light);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid var(--accent-color);
-        }
-        
-        /* Contenedor de información del track con carátula */
-        .track-info-container {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-            margin-bottom: 15px;
-        }
-        
-        /* Carátula del track */
-        .track-cover {
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
-            object-fit: cover;
-            background: linear-gradient(135deg, #2d2d2d 0%, #4a4a4a 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            border: 2px solid var(--accent-color);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-        
-        .track-cover i {
-            font-size: 30px;
-            color: var(--text-secondary);
-        }
-        
-        .track-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .track-info {
-            flex-grow: 1;
-        }
-        
-        .track-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            line-height: 1.3;
-        }
-        
-        .track-details {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .track-artist {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-        
-        .track-category {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            background-color: var(--accent-color);
-            padding: 3px 10px;
-            border-radius: 12px;
-            display: inline-block;
-            width: fit-content;
-        }
-        
-        .controls-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-top: 10px;
-        }
-        
-        .control-buttons {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .control-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--accent-color);
-            border: none;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-        
-        .control-btn:hover {
-            background-color: var(--highlight-color);
-        }
-        
-        .play-btn {
-            width: 45px;
-            height: 45px;
-            font-size: 1.3rem;
-            background-color: var(--highlight-color);
-        }
-        
-        .progress-container {
-            flex-grow: 1;
-        }
-        
-        .progress-time {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-        
-        .progress-bar {
-            height: 5px;
-            background-color: var(--accent-color);
-            border-radius: 3px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .progress {
-            height: 100%;
-            background-color: var(--highlight-color);
-            width: 0%;
-            transition: width 0.1s;
-        }
-        
-        .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-left: 10px;
-        }
-        
-        .volume-icon {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-        
-        .volume-slider {
-            width: 80px;
-            height: 5px;
-            -webkit-appearance: none;
-            background-color: var(--accent-color);
-            border-radius: 3px;
-            outline: none;
-        }
-        
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background-color: var(--text-secondary);
-            cursor: pointer;
-        }
-        
-        /* Playlist Compacta */
-        .playlist-container {
-            border-top: 1px solid var(--accent-color);
-            padding-top: 20px;
-        }
-        
-        .playlist-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .playlist-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0;
-        }
-        
-        .playlist-count {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            background-color: var(--accent-color);
-            padding: 3px 10px;
-            border-radius: 20px;
-        }
-        
-        .playlist-items {
-            max-height: 250px;
-            overflow-y: auto;
-        }
-        
-        .playlist-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 12px;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .playlist-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-        
-        .playlist-item.active {
-            background-color: rgba(255, 255, 255, 0.08);
-        }
-        
-        .playlist-item-index {
-            width: 25px;
-            text-align: center;
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        
-        .playlist-item-info {
-            flex-grow: 1;
-            padding: 0 12px;
-        }
-        
-        .playlist-item-title {
-            font-weight: 500;
-            margin-bottom: 4px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-        }
-        
-        .playlist-item-details {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .playlist-item-artist {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        
-        .playlist-item-category {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            background-color: var(--accent-color);
-            padding: 2px 8px;
-            border-radius: 10px;
-        }
-        
-        .playlist-item-duration {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-        
-        .loading-duration {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            font-style: italic;
-        }
-        
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 18px 30px;
-            background-color: var(--bg-light);
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--accent-color);
-        }
-        
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 12px;
-        }
-        
-        .social-link {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: var(--accent-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        
-        .social-link:hover {
-            background-color: var(--highlight-color);
-            color: var(--text-primary);
-        }
-        
-        /* Scrollbar personalizada */
-        .playlist-items::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .playlist-items::-webkit-scrollbar-track {
-            background-color: var(--accent-color);
-            border-radius: 3px;
-        }
-        
-        .playlist-items::-webkit-scrollbar-thumb {
-            background-color: var(--highlight-color);
-            border-radius: 3px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 576px) {
-            body {
-                padding: 10px;
-            }
-            
-            .header-section {
-                flex-direction: column;
-                text-align: center;
-                gap: 20px;
-                padding: 20px;
-            }
-            
-            .profile-img {
-                width: 90px;
-                height: 90px;
-            }
-            
-            .profile-title {
-                font-size: 2rem;
-            }
-            
-            .profile-subtitle {
-                font-size: 0.95rem;
-            }
-            
-            .track-info-container {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                gap: 15px;
-            }
-            
-            .track-cover {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .nav-link {
-                padding: 14px 15px;
-                font-size: 0.9rem;
-            }
-            
-            .nav-link i {
-                margin-right: 5px;
-            }
-            
-            .player-section {
-                padding: 20px;
-            }
-            
-            .player-controls {
-                padding: 15px;
-            }
-            
-            .track-title {
-                font-size: 1.3rem;
-            }
-            
-            .controls-container {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 15px;
-            }
-            
-            .control-buttons {
-                justify-content: center;
-            }
-            
-            .volume-container {
-                justify-content: center;
-                margin-left: 0;
-            }
-            
-            .volume-slider {
-                width: 120px;
-            }
-            
-            .footer {
-                padding: 15px 20px;
-            }
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(9, 9, 11, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .notification-enter { transform: translate(-50%, -100%); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .notification-active { transform: translate(-50%, 20px); opacity: 1; }
     </style>
 </head>
-<body>
-    <div class="portfolio-container">
-        <!-- Encabezado con degradado -->
-        <div class="header-section">
-            <div class="profile-img">
-                <i class="fas fa-user"></i>
-            </div>
-            <div class="header-info">
-                <h1 class="profile-title">DAIOR</h1>
-                <h2 class="profile-subtitle">Music Producer & Audio Mixing Engineer</h2>
-                <div class="category-tag">PORTFOLIO</div>
-            </div>
+<body class="bg-[#09090b] text-zinc-100 min-h-screen flex flex-col">
+
+    <div id="notification" class="fixed top-0 left-1/2 notification-enter z-[100] bg-emerald-500 text-black px-6 py-3 rounded-2xl font-bold shadow-2xl shadow-emerald-500/20 flex items-center gap-2 pointer-events-none">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        Producto añadido al carrito
+    </div>
+
+    <nav class="sticky top-0 z-40 glass">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2 group">
+                <span class="text-2xl group-hover:rotate-12 transition-transform">🍃</span>
+                <span class="text-xl font-bold tracking-tighter uppercase">Daior</span>
+            </a>
+            <button id="cart-button" class="relative p-2.5 bg-zinc-900 rounded-2xl border border-zinc-800 hover:border-emerald-500/50 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <span id="cart-count" class="absolute -top-1 -right-1 bg-emerald-500 text-[10px] text-black font-black h-5 w-5 flex items-center justify-center rounded-lg">0</span>
+            </button>
         </div>
-        
-        <!-- Menú horizontal -->
-        <div class="menu-section">
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="shop.html" class="nav-link" title="Tienda">
-                        <i class="fas fa-shopping-cart"></i> Tienda
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="https://t.me/dai0r" target="_blank" class="nav-link" title="Contacto">
-                        <i class="fab fa-telegram"></i> Contacto
-                    </a>
-                </li>
-            </ul>
-        </div>
-        
-        <!-- Reproductor Compacto -->
-        <div class="player-section">
-            <!-- Controles del reproductor con título integrado -->
-            <div class="player-controls">
-                <!-- Información del track con carátula -->
-                <div class="track-info-container">
-                    <div class="track-cover" id="current-track-cover">
-                        <i class="fas fa-music"></i>
-                    </div>
-                    <div class="track-info">
-                        <div class="track-title" id="current-track-title">Selecciona un track</div>
-                        <div class="track-details">
-                            <div class="track-artist" id="current-track-artist">Daior</div>
-                            <div class="track-category" id="current-track-category">Producción</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="controls-container">
-                    <div class="control-buttons">
-                        <button class="control-btn" id="prev-btn" title="Anterior">
-                            <i class="fas fa-step-backward"></i>
-                        </button>
-                        <button class="control-btn play-btn" id="play-btn" title="Reproducir">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        <button class="control-btn" id="next-btn" title="Siguiente">
-                            <i class="fas fa-step-forward"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="progress-container">
-                        <div class="progress-time">
-                            <span id="current-time">0:00</span>
-                            <span id="total-time">0:00</span>
-                        </div>
-                        <div class="progress-bar" id="progress-bar">
-                            <div class="progress" id="progress"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="volume-container">
-                        <i class="fas fa-volume-up volume-icon"></i>
-                        <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.01" value="0.7">
-                    </div>
-                </div>
-            </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 flex-grow">
+        <header class="mb-16">
+            <h1 class="text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent">Daior Shop</h1>
+            <p class="text-zinc-500 max-w-lg">Recursos y servicios profesionales.</p>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-12">
+            <input type="text" id="search-input" placeholder="Buscar..." class="md:col-span-6 bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-emerald-500/50 transition-all">
             
-            <!-- Playlist Compacta -->
-            <div class="playlist-container">
-                <div class="playlist-header">
-                    <h3 class="playlist-title">Playlist</h3>
-                    <div class="playlist-count" id="playlist-count">6 tracks</div>
+            <select id="category-select" class="md:col-span-3 bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 focus:outline-none text-zinc-400">
+                <option value="all">Todas las categorías</option>
+            </select>
+            
+            <div class="md:col-span-3 bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-3 flex flex-col justify-center">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Presupuesto Máximo</span>
+                    <span id="price-value" class="text-xs font-bold text-emerald-500 tracking-tight">Cualquier precio</span>
                 </div>
-                <div class="playlist-items" id="playlist-items">
-                    <!-- Las canciones se cargarán aquí con JavaScript -->
+                <input type="range" id="price-range" min="0" max="200" step="10" value="200" class="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            </div>
+        </section>
+
+        <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+    </main>
+
+    <footer class="bg-zinc-950 border-t border-zinc-900 pt-16 pb-8 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <div>
+                    <h4 class="text-lg font-bold mb-4 flex items-center gap-2">🍃 DAIOR</h4>
+                    <p class="text-zinc-500 text-sm leading-relaxed">Elevando tu sonido al siguiente nivel con calidad de industria y atención personalizada.</p>
+                </div>
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-[0.2em] text-emerald-500 mb-6">Contacto & Redes</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li><a href="https://instagram.com/daior_" target="_blank" class="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors"><span>Instagram:</span> <strong class="text-zinc-200">@daior_</strong></a></li>
+                        <li><a href="https://t.me/dai0r" target="_blank" class="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors"><span>Telegram:</span> <strong class="text-zinc-200">@dai0r</strong></a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 mb-6">Información</h4>
+                    <p class="text-zinc-400 text-sm mb-2 italic text-emerald-500/80">Tiempo de entrega: 2 a 5 días hábiles.</p>
+                    <p class="text-zinc-500 text-xs">Aceptamos PayPal y Tarjetas de Crédito.</p>
                 </div>
             </div>
+            <div class="pt-8 border-t border-zinc-900 text-center text-zinc-600 text-[10px] uppercase tracking-widest">
+                © 2026 Daior. Todos los derechos reservados.
+            </div>
         </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            <p>© 2026 Daior - Music Producer & Audio Mixing Engineer</p>
-            <p>beatsbydaior@gmail.com</p>
-            <div class="social-links">
-                <a href="#" class="social-link" target="_blank" title="SoundCloud">
-                    <i class="fab fa-soundcloud"></i>
-                </a>
-                <a href="https://www.instagram.com/daior_" target="_blank" class="social-link" title="Instagram">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="#" class="social-link" target="_blank" title="Spotify">
-                    <i class="fas fa-music"></i>
-                </a>
-                <a href="http://youtube.com/@daior" target="_blank" class="social-link" title="YouTube">
-                    <i class="fab fa-youtube"></i>
-                </a>
+    </footer>
+
+    <div id="cart-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="close-cart-overlay"></div>
+        <div class="absolute right-0 top-0 h-full w-full max-w-md bg-zinc-950 border-l border-zinc-800 shadow-2xl flex flex-col">
+            <div class="p-6 border-b border-zinc-800 flex justify-between items-center">
+                <h3 class="text-xl font-bold italic uppercase tracking-tighter">Tu Selección</h3>
+                <button id="close-cart" class="text-zinc-500 hover:text-white transition-colors">✕</button>
+            </div>
+            <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4"></div>
+            <div class="p-6 border-t border-zinc-800 bg-zinc-900/30">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-zinc-500 font-bold uppercase text-xs tracking-widest">Total:</span>
+                    <span id="cart-total" class="text-3xl font-black text-white">$0.00</span>
+                </div>
+                <div class="space-y-3">
+                    <button onclick="checkoutWhatsApp()" class="w-full py-4 rounded-2xl bg-[#25D366] text-black font-bold flex items-center justify-center gap-2 hover:bg-[#20ba5a] transition-all">
+                    <span class="[&>svg]:h-5 [&>svg]:w-5">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 448 512">
+                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                        <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
+                    </svg>
+                    </span>    
+                        Pedir por WhatsApp
+                    </button>
+                    <div id="paypal-button-container"></div>
+                </div>
             </div>
         </div>
     </div>
+<div id="email-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/90">
+        <div class="glass max-w-md w-full p-8 rounded-3xl text-center">
+            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">¡Pago Confirmado!</h2>
+            <p class="text-zinc-400 mb-6">Ingresa el correo electrónico donde deseas recibir tus productos digitales.</p>
+            <input type="email" id="customer-delivery-email" placeholder="tu@email.com" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 mb-4 focus:outline-none focus:border-emerald-500 transition-all">
+            <button onclick="processEmailSubmission()" class="w-full py-4 bg-emerald-500 text-black font-bold rounded-2xl hover:bg-emerald-400 transition-all">Ver mi Recibo</button>
+        </div>
+    </div>
 
-    <script>
-        // Datos de la playlist con carátulas
-        const playlist = [
-            {
-                title: "Terrenal",
-                artist: "Ethiral",
-                category: "Vocal Mixing / Mastering",
-                src: "tracks/ETHIRAL%20-%20Terrenal%20(Mixed%20by%20Daior).mp3",
-                cover: "covers/miami.jpg", // Ruta a la carátula
-                type: "mp3"
-            },
-            {
-                title: "Neon Dreams",
-                artist: "Daior ft. Maya",
-                category: "Mezcla",
-                src: "https://assets.mixkit.co/music/preview/mixkit-driving-ambition-32.mp3",
-                cover: "covers/neon-dreams.jpg", // Ruta a la carátula
-                type: "mp3"
-            },
-            {
-                title: "Echoes in the Void",
-                artist: "Daior",
-                category: "Mastering",
-                src: "https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3",
-                cover: "covers/echoes.jpg", // Ruta a la carátula
-                type: "mp3"
-            },
-            {
-                title: "Solar Flare",
-                artist: "Daior",
-                category: "Producción",
-                src: "https://assets.mixkit.co/music/preview/mixkit-summer-breeze-3.mp3",
-                cover: "covers/solar-flare.jpg", // Ruta a la carátula
-                type: "mp3"
-            },
-            {
-                title: "Liquid Crystal",
-                artist: "Daior",
-                category: "Mezcla",
-                src: "https://assets.mixkit.co/music/preview/mixkit-cool-vibes-66.mp3", 
-                cover: "covers/liquid-crystal.jpg", // Ruta a la carátula
-                type: "mp3"
-            },
-            {
-                title: "Urban Legends",
-                artist: "Daior",
-                category: "Producción",
-                src: "https://assets.mixkit.co/music/preview/mixkit-futuristic-beat-166.mp3",
-                cover: "covers/urban-legends.jpg", // Ruta a la carátula
-                type: "mp3"
-            }
-        ];
-        
-        // Elementos del DOM
-        const audioPlayer = new Audio();
-        const playBtn = document.getElementById('play-btn');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const progressBar = document.getElementById('progress-bar');
-        const progress = document.getElementById('progress');
-        const currentTimeEl = document.getElementById('current-time');
-        const totalTimeEl = document.getElementById('total-time');
-        const volumeSlider = document.getElementById('volume-slider');
-        const currentTrackTitle = document.getElementById('current-track-title');
-        const currentTrackArtist = document.getElementById('current-track-artist');
-        const currentTrackCategory = document.getElementById('current-track-category');
-        const currentTrackCover = document.getElementById('current-track-cover');
-        const playlistItems = document.getElementById('playlist-items');
-        const playlistCount = document.getElementById('playlist-count');
-        
-        // Variables de estado
-        let isPlaying = false;
-        let currentTrackIndex = 0;
-        let trackDurations = new Array(playlist.length).fill(null); // Almacena las duraciones detectadas
-        
-        // Función para formatear tiempo (segundos a mm:ss)
-        function formatTime(seconds) {
-            if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
-            
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-        
-        // Detectar duración de un track específico
-        function detectTrackDuration(index) {
-            return new Promise((resolve, reject) => {
-                // Si ya tenemos la duración, la devolvemos
-                if (trackDurations[index] !== null) {
-                    resolve(trackDurations[index]);
-                    return;
-                }
-                
-                const tempAudio = new Audio();
-                tempAudio.src = playlist[index].src;
-                
-                // Intentar obtener duración desde metadatos
-                tempAudio.addEventListener('loadedmetadata', () => {
-                    if (tempAudio.duration && !isNaN(tempAudio.duration) && isFinite(tempAudio.duration)) {
-                        trackDurations[index] = tempAudio.duration;
-                        resolve(tempAudio.duration);
-                    } else {
-                        // Si no se puede obtener de los metadatos, usar un valor por defecto
-                        trackDurations[index] = 0;
-                        resolve(0);
-                    }
-                    // Limpiar
-                    tempAudio.src = '';
-                });
-                
-                // Manejar errores
-                tempAudio.addEventListener('error', () => {
-                    trackDurations[index] = 0;
-                    resolve(0);
-                });
-                
-                // Timeout por si tarda demasiado
-                setTimeout(() => {
-                    if (trackDurations[index] === null) {
-                        trackDurations[index] = 0;
-                        resolve(0);
-                    }
-                }, 5000);
-            });
-        }
-        
-        // Detectar duraciones de todos los tracks en segundo plano
-        async function detectAllDurations() {
-            const promises = playlist.map((_, index) => detectTrackDuration(index));
-            await Promise.allSettled(promises);
-            updatePlaylistDurations();
-        }
-        
-        // Actualizar las duraciones en la playlist visualmente
-        function updatePlaylistDurations() {
-            document.querySelectorAll('.playlist-item').forEach((item, index) => {
-                const durationElement = item.querySelector('.playlist-item-duration');
-                if (durationElement && trackDurations[index] !== null && trackDurations[index] > 0) {
-                    durationElement.textContent = formatTime(trackDurations[index]);
-                    durationElement.classList.remove('loading-duration');
-                }
-            });
-        }
-        
-        // Cargar carátula de track
-        function loadTrackCover(coverElement, coverUrl) {
-            if (coverUrl) {
-                const img = new Image();
-                img.src = coverUrl;
-                img.onload = function() {
-                    // Limpiar el contenedor
-                    coverElement.innerHTML = '';
-                    // Añadir la imagen
-                    coverElement.appendChild(img);
-                };
-                img.onerror = function() {
-                    // Si falla la carga, mantener el icono
-                    coverElement.innerHTML = '<i class="fas fa-music"></i>';
-                };
-            } else {
-                // Si no hay carátula, usar icono por defecto
-                coverElement.innerHTML = '<i class="fas fa-music"></i>';
-            }
-        }
-        
-        // Inicializar playlist
-        function initPlaylist() {
-            playlistItems.innerHTML = '';
-            playlistCount.textContent = `${playlist.length} tracks`;
-            
-            playlist.forEach((track, index) => {
-                const item = document.createElement('div');
-                item.className = 'playlist-item';
-                if (index === currentTrackIndex) {
-                    item.classList.add('active');
-                }
-                
-                // Mostrar "Cargando..." mientras se detecta la duración
-                const durationDisplay = trackDurations[index] !== null && trackDurations[index] > 0 
-                    ? formatTime(trackDurations[index]) 
-                    : '<span class="loading-duration">Cargando...</span>';
-                
-                item.innerHTML = `
-                    <div class="playlist-item-index">${index + 1}</div>
-                    <div class="playlist-item-info">
-                        <div class="playlist-item-title">${track.title}</div>
-                        <div class="playlist-item-details">
-                            <span class="playlist-item-artist">${track.artist}</span>
-                            <span class="playlist-item-category">${track.category}</span>
-                        </div>
+    <div id="invoice-modal" class="fixed inset-0 z-[70] hidden overflow-y-auto bg-black/95 p-4 sm:p-8">
+        <div class="max-w-2xl mx-auto">
+            <div id="invoice-content" class="bg-white text-zinc-900 p-8 sm:p-12 rounded-t-3xl shadow-2xl">
+                <div class="flex justify-between items-start mb-10">
+                    <div>
+                        <h1 class="text-3xl font-black tracking-tighter text-black mb-1">DAIOR SHOP</h1>
+                        <p class="text-xs text-zinc-500 uppercase tracking-widest font-bold" id="invoice-id">#INV-0000</p>
                     </div>
-                    <div class="playlist-item-duration">${durationDisplay}</div>
-                `;
-                
-                item.addEventListener('click', () => {
-                    playTrack(index);
-                });
-                
-                playlistItems.appendChild(item);
-            });
-        }
-        
-        // Cargar una pista (sin reproducir automáticamente)
-        function loadTrack(index) {
-            // Actualizar índice actual
-            currentTrackIndex = index;
-            
-            // Obtener pista actual
-            const track = playlist[currentTrackIndex];
-            
-            // Actualizar reproductor
-            audioPlayer.src = track.src;
-            currentTrackTitle.textContent = track.title;
-            currentTrackArtist.textContent = track.artist;
-            currentTrackCategory.textContent = track.category;
-            
-            // Cargar carátula
-            loadTrackCover(currentTrackCover, track.cover);
-            
-            // Asegurar que el botón muestre "play" (estado pausado)
-            isPlaying = false;
-            playBtn.innerHTML = '<i class="fas fa-play"></i>';
-            playBtn.title = "Reproducir";
-            
-            // Actualizar playlist visualmente
-            document.querySelectorAll('.playlist-item').forEach((item, i) => {
-                if (i === currentTrackIndex) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-            
-            // Actualizar tiempo total cuando se cargue el audio
-            audioPlayer.addEventListener('loadedmetadata', function() {
-                if (audioPlayer.duration && !isNaN(audioPlayer.duration)) {
-                    totalTimeEl.textContent = formatTime(audioPlayer.duration);
-                    // Actualizar también en el array de duraciones
-                    trackDurations[currentTrackIndex] = audioPlayer.duration;
-                    updatePlaylistDurations();
-                }
-                // Reiniciar el progreso a 0
-                currentTimeEl.textContent = "0:00";
-                progress.style.width = "0%";
-            }, { once: true });
-        }
-        
-        // Reproducir o pausar audio
-        function togglePlayPause() {
-            if (isPlaying) {
-                pauseAudio();
-            } else {
-                playAudio();
-            }
-        }
-        
-        function playAudio() {
-            // Si el audio no tiene src (primer click), cargar el track primero
-            if (!audioPlayer.src) {
-                loadTrack(currentTrackIndex);
-            }
-            
-            audioPlayer.play();
-            isPlaying = true;
-            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            playBtn.title = "Pausar";
-        }
-        
-        function pauseAudio() {
-            audioPlayer.pause();
-            isPlaying = false;
-            playBtn.innerHTML = '<i class="fas fa-play"></i>';
-            playBtn.title = "Reproducir";
-        }
-        
-        // Cargar y reproducir una pista
-        function playTrack(index) {
-            loadTrack(index);
-            playAudio();
-        }
-        
-        // Pista siguiente
-        function nextTrack() {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-            playTrack(currentTrackIndex);
-        }
-        
-        // Pista anterior
-        function prevTrack() {
-            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
-            playTrack(currentTrackIndex);
-        }
-        
-        // Actualizar barra de progreso
-        function updateProgress() {
-            const duration = audioPlayer.duration;
-            const currentTime = audioPlayer.currentTime;
-            
-            // Actualizar barra de progreso
-            const progressPercent = (currentTime / duration) * 100;
-            progress.style.width = `${progressPercent}%`;
-            
-            // Actualizar tiempos
-            currentTimeEl.textContent = formatTime(currentTime);
-            
-            if (duration && !isNaN(duration)) {
-                totalTimeEl.textContent = formatTime(duration);
-            }
-        }
-        
-        // Establecer progreso al hacer clic en la barra
-        function setProgress(e) {
-            const width = this.clientWidth;
-            const clickX = e.offsetX;
-            const duration = audioPlayer.duration;
-            
-            if (duration) {
-                audioPlayer.currentTime = (clickX / width) * duration;
-            }
-        }
-        
-        // Actualizar volumen
-        function setVolume() {
-            audioPlayer.volume = volumeSlider.value;
-        }
-        
-        // Event Listeners
-        playBtn.addEventListener('click', togglePlayPause);
-        prevBtn.addEventListener('click', prevTrack);
-        nextBtn.addEventListener('click', nextTrack);
-        audioPlayer.addEventListener('timeupdate', updateProgress);
-        audioPlayer.addEventListener('ended', nextTrack);
-        progressBar.addEventListener('click', setProgress);
-        volumeSlider.addEventListener('input', setVolume);
-        
-        // Inicializar la aplicación
-        async function init() {
-            initPlaylist();
-            // Solo carga el primer track, no lo reproduce
-            loadTrack(0);
-            setVolume(); // Establecer volumen inicial
-            
-            // Iniciar detección de duraciones en segundo plano
-            setTimeout(() => {
-                detectAllDurations();
-            }, 1000);
-        }
-        
-        // Inicializar cuando se cargue la página
-        window.addEventListener('DOMContentLoaded', init);
-        
-        // Para cuando reemplaces la foto de perfil:
-        // 1. Sube tu foto a un servidor o carpeta del proyecto
-        // 2. Reemplaza el div con clase "profile-img" por:
-        // <img src="URL_DE_TU_FOTO" alt="Daior" class="profile-img">
-        // 3. Elimina el icono de usuario dentro de ese div
-    </script>
-    
-    <!-- Bootstrap JS Bundle (opcional, solo si necesitas componentes JS) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                    <div class="text-right">
+                        <p class="text-sm font-bold">Fecha</p>
+                        <p class="text-sm text-zinc-600" id="invoice-date">00/00/2026</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-8 mb-10 border-t border-zinc-100 pt-8">
+                    <div>
+                        <p class="text-[10px] font-black text-zinc-400 uppercase mb-2">Cliente (PayPal)</p>
+                        <p class="font-bold" id="invoice-client-name">---</p>
+                        <p class="text-sm text-zinc-600" id="invoice-client-paypal">---</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-zinc-400 uppercase mb-2">Envío Digital a</p>
+                        <p class="font-bold text-emerald-600" id="invoice-delivery-email">---</p>
+                    </div>
+                </div>
+
+                <table class="w-full mb-10">
+                    <thead>
+                        <tr class="text-left border-b-2 border-zinc-100">
+                            <th class="pb-4 text-[10px] font-black text-zinc-400 uppercase">Producto</th>
+                            <th class="pb-4 text-right text-[10px] font-black text-zinc-400 uppercase">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-items">
+                        </tbody>
+                </table>
+
+                <div class="flex justify-end pt-6 border-t border-zinc-100">
+                    <div class="text-right">
+                        <p style="font-size: 14px; color: #71717a; font-weight: bold; margin-bottom: 4px;">Total Pagado</p>
+                        <p id="invoice-total" style="font-size: 32px; font-weight: 800; color: #000000; margin: 0;">$0.00</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-zinc-100 p-6 rounded-b-3xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button onclick="downloadPDF()" class="flex items-center justify-center gap-2 py-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-black transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Descargar PDF
+                </button>
+                <button onclick="sendInvoiceToWhatsApp()" class="flex items-center justify-center gap-2 py-4 bg-[#25D366] text-black rounded-2xl font-bold hover:opacity-90 transition-all">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.204l-.651 2.375 2.431-.637c.901.491 1.837.753 2.965.753 3.18 0 5.767-2.586 5.768-5.766 0-3.18-2.587-5.795-5.77-5.795z"/></svg>
+                    Enviar al WhatsApp de Daior
+                </button>
+            </div>
+            <button onclick="location.reload()" class="w-full text-center mt-8 text-zinc-500 hover:text-white text-sm font-bold underline">Volver a la tienda</button>
+        </div>
+    </div>
+    <script src="app.js"></script>
 </body>
 </html>
