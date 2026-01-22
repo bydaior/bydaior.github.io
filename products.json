@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "category": "servicios",
+    "name": "Vocal Mixing",
+    "price": 49.99,
+    "image": "images/vocal-mixing.webp",
+    "description": "Mezcla profesional de voces para tus canciones."
+  },
+  {
+    "id": 2,
+    "category": "servicios",
+    "name": "Mixing Silver",
+    "price": 80.00,
+    "image": "images/mixing-silver.webp",
+    "description": "Mezcla de alta calidad con procesamiento estándar."
+  },
+  {
+    "id": 3,
+    "category": "servicios",
+    "name": "Mixing Platinum",
+    "price": 134.00,
+    "image": "images/mixing-platinum.webp",
+    "description": "Mezcla premium con procesamiento detallado y stems."
+  },
+  {
+    "id": 4,
+    "category": "servicios",
+    "name": "Exclusive Beat",
+    "price": 150.00,
+    "image": "images/exclusive-beat.webp",
+    "description": "Producción musical exclusiva y personalizada."
+  },
+  {
+    "id": 5,
+    "category": "servicios",
+    "name": "Masterización",
+    "price": 45.00,
+    "image": "images/mastering.webp",
+    "description": "Masterización profesional para finalizar tu track."
+  },
+  {
+    "id": 6,
+    "category": "drumkits",
+    "name": "Catarsis Drumkit (Reggaeton)",
+    "price": 45.00,
+    "image": "images/catarsis-drumkit.webp",
+    "description": "Sonidos de reggaeton premium curados por Daior."
+  }
+]
