@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="overflow-y-scroll">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,19 +15,8 @@
         .notification-active { transform: translate(-50%, 20px); opacity: 1; }
     </style>
     <link rel="icon" type="image/png" href="images/favicon.ico">
-    <link rel="apple-touch-icon" href="images/Daior-Logo-Black-ico.ico">
-    <link rel="shortcut icon" sizes="192x192" href="images/Daior-Logo-Black-ico.ico">
-    <meta name="description" content="Daior - Beats exclusivos, servicios de mezcla y masterización. Eleva tu sonido al nivel de la industria.">
-    <meta name="keywords" content="Daior, Beats, Instrumentales, Drumkits, FL Studio Presets, Ableton Live Presets, Mezcla y Mastering, Trap, Reggaeton, Música">
-    <meta name="author" content="Daior">
-    <meta property="og:title" content="Daior | Music Producer / Audio Mixing Eng.">
-    <meta property="og:description" content="Recursos de Producción Musical y Mezcla de Audio">
-    <meta property="og:image" content="https://bydaior.github.io/images/Daior-Logo-Black-ico.png">
-    <meta property="og:url" content="https://bydaior.github.io/">
-    <meta name="twitter:card" content="summary_large_image">
 </head>
 <body class="bg-[#09090b] text-zinc-100 min-h-screen flex flex-col">
-
     <div id="notification" class="fixed top-0 left-1/2 notification-enter z-[100] bg-emerald-500 text-black px-6 py-3 rounded-2xl font-bold shadow-2xl shadow-emerald-500/20 flex items-center gap-2 pointer-events-none">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
         Producto añadido al carrito
@@ -47,30 +36,32 @@
             </button>
         </div>
     </nav>
-
-    <main class="max-w-7xl mx-auto px-6 py-12 flex-grow">
-        <header class="mb-16">
+    <main class="max-w-7xl mx-auto px-6 py-12 flex-grow w-full"> <header class="mb-16">
             <h1 class="text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent">Daior Shop</h1>
             <p class="text-zinc-500 max-w-lg">Recursos y servicios profesionales.</p>
         </header>
 
         <section class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-12">
-            <input type="text" id="search-input" placeholder="Buscar..." class="md:col-span-6 bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-emerald-500/50 transition-all">
+            <input type="text" id="search-input" oninput="filter()" placeholder="Buscar..." class="md:col-span-6 bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-emerald-500/50 transition-all">
             
-            <select id="category-select" class="md:col-span-3 bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 focus:outline-none text-zinc-400">
+            <select id="category-select" onchange="filter()" class="md:col-span-3 bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 focus:outline-none text-zinc-400">
                 <option value="all">Todas las categorías</option>
             </select>
             
-            <div class="md:col-span-3 bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-3 flex flex-col justify-center">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Presupuesto Máximo</span>
-                    <span id="price-value" class="text-xs font-bold text-emerald-500 tracking-tight">Cualquier precio</span>
-                </div>
-                <input type="range" id="price-range" min="0" max="200" step="10" value="200" class="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <div class="md:col-span-3 bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 flex flex-col justify-center">
+                <p class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-2">Presupuesto</p>
+                <select id="price-select" onchange="filter()" class="bg-transparent text-sm font-bold text-zinc-300 focus:outline-none cursor-pointer">
+                    <option value="Infinity" selected>Cualquier precio</option>
+                    <option value="150">Hasta $150</option>
+                    <option value="100">Hasta $100</option>
+                    <option value="50">Hasta $50</option>
+                    <option value="30">Hasta $30</option>
+                </select>
             </div>
         </section>
 
-        <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-w-full">
+            </div>
     </main>
 
     <footer class="bg-zinc-950 border-t border-zinc-900 pt-16 pb-8 px-6">
