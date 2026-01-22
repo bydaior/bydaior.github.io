@@ -17,6 +17,7 @@
     <link rel="icon" type="image/png" href="images/favicon.ico">
 </head>
 <body class="bg-[#09090b] text-zinc-100 min-h-screen flex flex-col">
+    
     <div id="notification" class="fixed top-0 left-1/2 notification-enter z-[100] bg-emerald-500 text-black px-6 py-3 rounded-2xl font-bold shadow-2xl shadow-emerald-500/20 flex items-center gap-2 pointer-events-none">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
         Producto añadido al carrito
@@ -36,7 +37,9 @@
             </button>
         </div>
     </nav>
-    <main class="max-w-7xl mx-auto px-6 py-12 flex-grow w-full"> <header class="mb-16">
+
+    <main class="max-w-7xl mx-auto px-6 py-12 flex-grow w-full"> 
+        <header class="mb-16">
             <h1 class="text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent">Daior Shop</h1>
             <p class="text-zinc-500 max-w-lg">Recursos y servicios profesionales.</p>
         </header>
@@ -60,8 +63,7 @@
             </div>
         </section>
 
-        <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-w-full">
-            </div>
+        <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-w-full"></div>
     </main>
 
     <footer class="bg-zinc-950 border-t border-zinc-900 pt-16 pb-8 px-6">
@@ -105,15 +107,9 @@
                 </div>
                 <div class="space-y-3">
                     <button onclick="checkoutWhatsApp()" class="w-full py-4 rounded-2xl bg-[#25D366] text-black font-bold flex items-center justify-center gap-2 hover:bg-[#20ba5a] transition-all">
-                    <span class="[&>svg]:h-5 [&>svg]:w-5">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="currentColor"
-                        viewBox="0 0 448 512">
-                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                        <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
-                    </svg>
-                    </span>    
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 448 512">
+                            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
+                        </svg>
                         Pedir por WhatsApp
                     </button>
                     <div id="paypal-button-container"></div>
@@ -121,7 +117,8 @@
             </div>
         </div>
     </div>
-<div id="email-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/90">
+
+    <div id="email-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/90">
         <div class="glass max-w-md w-full p-8 rounded-3xl text-center">
             <div class="w-16 h-16 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -146,7 +143,6 @@
                         <p class="text-sm text-zinc-600" id="invoice-date">00/00/2026</p>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-8 mb-10 border-t border-zinc-100 pt-8">
                     <div>
                         <p class="text-[10px] font-black text-zinc-400 uppercase mb-2">Cliente (PayPal)</p>
@@ -158,7 +154,6 @@
                         <p class="font-bold text-emerald-600 break-all leading-tight" id="invoice-delivery-email">---</p>
                     </div>
                 </div>
-
                 <table class="w-full mb-10">
                     <thead>
                         <tr class="text-left border-b-2 border-zinc-100">
@@ -166,10 +161,8 @@
                             <th class="pb-4 text-right text-[10px] font-black text-zinc-400 uppercase">Total</th>
                         </tr>
                     </thead>
-                    <tbody id="invoice-items">
-                        </tbody>
+                    <tbody id="invoice-items"></tbody>
                 </table>
-
                 <div class="flex justify-end pt-6 border-t border-zinc-100">
                     <div class="text-right">
                         <p style="font-size: 14px; color: #71717a; font-weight: bold; margin-bottom: 4px;">Total Pagado</p>
@@ -177,12 +170,9 @@
                     </div>
                 </div>
             </div>
-
             <div class="bg-zinc-100 p-6 rounded-b-3xl grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button onclick="downloadPNG()" class="flex items-center justify-center gap-2 py-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-black transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     Descargar Recibo (PNG)
                 </button>
                 <button onclick="sendInvoiceToWhatsApp()" class="flex items-center justify-center gap-2 py-4 bg-[#25D366] text-black rounded-2xl font-bold hover:opacity-90 transition-all">
@@ -190,9 +180,29 @@
                     Enviar al WhatsApp
                 </button>
             </div>
-            <button onclick="location.reload()" class="w-full text-center mt-8 text-zinc-500 hover:text-white text-sm font-bold underline">Volver a la tienda</button>
+            <button onclick="location.reload()" class="w-full text-center mt-8 text-zinc-500 hover:text-white text-sm font-bold underline mb-10">Volver a la tienda</button>
+        </div>
+    </div> 
+
+    <div id="product-modal" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
+        <div class="bg-zinc-900 border border-zinc-800 max-w-lg w-full rounded-3xl overflow-hidden relative">
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 text-white text-2xl z-10">&times;</button>
+            <div class="p-6 text-left">
+                <img id="modal-img" src="" class="w-full aspect-video object-cover rounded-2xl mb-4">
+                <h2 id="modal-name" class="text-2xl font-bold text-white mb-2 leading-tight"></h2>
+                <p id="modal-price" class="text-xl text-emerald-500 font-bold mb-4"></p>
+                <div class="border-t border-zinc-800 pt-4">
+                    <p id="modal-description" class="text-zinc-400 leading-relaxed text-sm"></p>
+                </div>
+                <div class="mt-6">
+                    <button id="modal-add-btn" class="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-emerald-500 hover:text-white transition-all duration-300">
+                        Añadir al carrito
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
