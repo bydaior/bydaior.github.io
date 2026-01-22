@@ -1,12 +1,99 @@
-// Base de Datos de Productos
-const products = [
-    { id: 1, name: "Vocal Mixing", price: 49.99, category: "Servicios", image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=500", desc: "Producción exclusiva adaptada a tu estilo." },
-    { id: 2, name: "Mixing Silver", price: 80.00, category: "Servicios", image: "https://images.unsplash.com/photo-1559732277-7453b141e3a1?w=500", desc: "Pulido profesional de alta fidelidad." },
-    { id: 3, name: "Mixing Platinum", price: 134.00, category: "Servicios", image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=500", desc: "Snares y kicks premium." },
-    { id: 4, name: "Exclusive Beat", price: 150.00, category: "Servicios", image: "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?w=500", desc: "Cadena de voces para FL Studio." },
-    { id: 5, name: "Masterización", price: 45.00, category: "Servicios", image: "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?w=500", desc: "Cadena de voces para FL Studio." },
-    { id: 6, name: "Catarsis Drumkit (Reggaeton)", price: 45.00, category: "Drumkits", image: "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?w=500", desc: "Cadena de voces para FL Studio." },
-];
+let products = [];
+
+// 1. CARGA INICIAL
+async function loadStore() {
+    console.log("Intentando cargar products.json...");
+    try {
+        const response = await fetch('https://bydaior.github.io/products.json');
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+        products = await response.json();
+        console.log("Datos recibidos correctamente:", products);
+
+        // Renderizar componentes
+        renderCategoryFilters();
+        displayProducts(products);
+
+    } catch (error) {
+        console.error("Detalle del error:", error);
+        const container = document.getElementById('product-list');
+        if (container) container.innerHTML = "<p class='text-center col-span-full'>Error al cargar productos.</p>";
+    }
+}
+
+// 2. RENDERIZAR CATEGORÍAS DINÁMICAS
+function renderCategoryFilters() {
+    const select = document.getElementById('category-select');
+    if (!select) return;
+
+    const categories = [...new Set(products.map(p => p.category))];
+    
+    // Mantener la opción inicial
+    select.innerHTML = '<option value="all">Todas las categorías</option>';
+
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+        select.appendChild(option);
+    });
+}
+
+// 3. MOSTRAR PRODUCTOS EN EL GRID
+function displayProducts(list) {
+    const container = document.getElementById('product-list'); // ID corregido según tu HTML
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (list.length === 0) {
+        container.innerHTML = "<p class='text-center col-span-full text-zinc-500'>No se encontraron resultados.</p>";
+        return;
+    }
+
+    list.forEach(p => {
+        container.innerHTML += `
+            <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-emerald-500/30 transition-all flex flex-col group">
+                <div class="relative overflow-hidden rounded-2xl mb-4">
+                    <img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-[10px] font-bold px-3 py-1 rounded-full text-zinc-300 uppercase tracking-widest">${p.category}</span>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">${p.name}</h3>
+                <div class="mt-auto flex justify-between items-center">
+                    <p class="text-2xl font-black text-emerald-500">$${p.price}</p>
+                    <button onclick="addToCart(${p.id})" class="p-3 bg-white text-black rounded-xl hover:bg-emerald-400 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </button>
+                </div>
+            </div>`;
+    });
+}
+
+// 4. LÓGICA DE FILTRADO
+function filter() {
+    const searchInput = document.getElementById('search-input');
+    const categorySelect = document.getElementById('category-select');
+    const priceSelect = document.getElementById('price-select');
+
+    const query = searchInput ? searchInput.value.toLowerCase() : "";
+    const cat = categorySelect ? categorySelect.value : "all";
+    const priceLimit = priceSelect ? (priceSelect.value === "Infinity" ? Infinity : parseFloat(priceSelect.value)) : Infinity;
+
+    const filtered = products.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(query);
+        const matchesCategory = (cat === 'all' || p.category === cat);
+        const matchesPrice = p.price <= priceLimit;
+        return matchesSearch && matchesCategory && matchesPrice;
+    });
+
+    displayProducts(filtered);
+}
+
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', loadStore);
+////
 
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 const WS_NUMBER = "+584142186884";
@@ -168,26 +255,33 @@ function checkoutWhatsApp() {
 // 5. Render y Filtros
 function updateCart() {
     localStorage.setItem('cart', JSON.stringify(cart));
-    document.getElementById('cart-count').textContent = cart.length;
-    
+    const cartCount = document.getElementById('cart-count');
     const cartItems = document.getElementById('cart-items');
-    let total = 0;
-    cartItems.innerHTML = cart.map((item, index) => {
-        total += item.price;
-        return `
-            <div class="flex items-center gap-4 bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
-                <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover">
-                <div class="flex-grow text-sm">
-                    <h4 class="font-bold">${item.name}</h4>
-                    <p class="text-emerald-500 font-bold">$${item.price}</p>
-                </div>
-                <button onclick="removeFromCart(${index})" class="text-zinc-600 hover:text-red-400">✕</button>
-            </div>
-        `;
-    }).join('');
+    const cartTotal = document.getElementById('cart-total');
     
-    document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
-    initPayPal();
+    if (cartCount) cartCount.textContent = cart.length;
+    
+    let total = 0;
+    if (cart.length === 0) {
+        cartItems.innerHTML = `<p class="text-center text-zinc-500 py-10">El carrito está vacío</p>`;
+        if (cartTotal) cartTotal.textContent = "$0.00";
+    } else {
+        cartItems.innerHTML = cart.map((item, index) => {
+            total += item.price;
+            return `
+                <div class="flex items-center gap-4 bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
+                    <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover">
+                    <div class="flex-grow text-sm">
+                        <h4 class="font-bold text-white">${item.name}</h4>
+                        <p class="text-emerald-500 font-bold">$${item.price.toFixed(2)}</p>
+                    </div>
+                    <button onclick="removeFromCart(${index})" class="text-zinc-600 hover:text-red-400 p-2">✕</button>
+                </div>`;
+        }).join('');
+        if (cartTotal) cartTotal.textContent = `$${total.toFixed(2)}`;
+    }
+    
+    initPayPal(); // Se asegura de actualizar PayPal con el nuevo total
 }
 
 function displayProducts(items) {
@@ -215,23 +309,34 @@ function displayProducts(items) {
 function filter() {
     const query = document.getElementById('search-input').value.toLowerCase();
     const cat = document.getElementById('category-select').value;
-    const priceRangeInput = document.getElementById('price-range');
-    const priceValueDisplay = document.getElementById('price-value');
     
-    const priceLimit = parseInt(priceRangeInput.value);
-
-    // Actualización visual del label de precio
-    if (priceLimit >= 200) {
-        priceValueDisplay.textContent = "Cualquier precio";
-    } else {
-        priceValueDisplay.textContent = `$${priceLimit}`;
-    }
+    // Capturamos el valor del select
+    const priceValue = document.getElementById('price-select').value;
+    
+    // Convertimos a número real o a Infinito absoluto
+    const priceLimit = priceValue === "Infinity" ? Infinity : parseFloat(priceValue);
 
     const filtered = products.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(query);
         const matchesCategory = (cat === 'all' || p.category === cat);
         
-        // CORRECCIÓN: Si el slider está al máximo (200), muestra todos
+        // Ahora la lógica es matemática pura: 
+        // Cualquier número siempre es menor que Infinity.
+        const matchesPrice = p.price <= priceLimit;
+        
+        return matchesSearch && matchesCategory && matchesPrice;
+    });
+
+    displayProducts(filtered);
+}
+
+function executeFiltering(priceLimit) {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const cat = document.getElementById('category-select').value;
+
+    const filtered = products.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(query);
+        const matchesCategory = (cat === 'all' || p.category === cat);
         const matchesPrice = (priceLimit >= 200 || p.price <= priceLimit);
         
         return matchesSearch && matchesCategory && matchesPrice;
@@ -240,12 +345,14 @@ function filter() {
     displayProducts(filtered);
 }
 
-// ... (resto de las funciones addToCart, updateCart, etc.)
-
+// 6. CORRECCIÓN DEL ADDTOCART (Para evitar errores si products aún no carga)
 function addToCart(id) {
-    cart.push(products.find(p => p.id === id));
-    updateCart();
-    showNotification();
+    const product = products.find(p => p.id === id);
+    if (product) {
+        cart.push({...product}); // Usamos copia para evitar problemas de referencia
+        updateCart();
+        showNotification();
+    }
 }
 
 function removeFromCart(index) {
@@ -253,20 +360,18 @@ function removeFromCart(index) {
     updateCart();
 }
 
-// Eventos de Modal
-document.getElementById('cart-button').onclick = () => document.getElementById('cart-modal').classList.remove('hidden');
-document.getElementById('close-cart').onclick = () => document.getElementById('cart-modal').classList.add('hidden');
-document.getElementById('close-cart-overlay').onclick = () => document.getElementById('cart-modal').classList.add('hidden');
+// 7. EVENTOS DE INICIALIZACIÓN (Sustituye los repetidos al final de tu archivo)
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadStore(); // Espera a que los productos carguen
+    updateCart();      // Carga el carrito del localStorage
+    
+    // Eventos de apertura/cierre de modal
+    const cartBtn = document.getElementById('cart-button');
+    const closeBtn = document.getElementById('close-cart');
+    const overlay = document.getElementById('close-cart-overlay');
+    const modal = document.getElementById('cart-modal');
 
-// Inicialización
-document.getElementById('search-input').oninput = filter;
-document.getElementById('category-select').onchange = filter;
-document.getElementById('price-range').oninput = filter;
-
-initCategories();
-displayProducts(products);
-updateCart();
-
-
-
-// FIN de CODIGO 2026.01.21
+    if(cartBtn) cartBtn.onclick = () => modal.classList.remove('hidden');
+    if(closeBtn) closeBtn.onclick = () => modal.classList.add('hidden');
+    if(overlay) overlay.onclick = () => modal.classList.add('hidden');
+});
