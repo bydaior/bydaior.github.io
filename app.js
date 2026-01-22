@@ -13,7 +13,7 @@ async function loadStore() {
         
         renderCategoryFilters();
         displayProducts(products);
-        updateCart();
+        updateCart(false); 
     } catch (error) {
         console.error("Error al cargar productos:", error);
     }
@@ -52,18 +52,19 @@ function renderCategoryFilters() {
         categories.map(cat => `<option value="${cat}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</option>`).join('');
 }
 
-// --- 3. GESTIÓN DEL MODAL DE DETALLES ---
+// --- 3. GESTIÓN DE MODALES Y NOTIFICACIONES ---
 function showProductDetails(id) {
     const product = products.find(p => p.id === id);
     if (!product) return;
 
     document.getElementById('modal-img').src = product.image;
     document.getElementById('modal-name').innerText = product.name;
-    document.getElementById('modal-price').innerText = `$${product.price}`;
+    document.getElementById('modal-price').innerText = `$${product.price.toFixed(2)}`;
     document.getElementById('modal-description').innerText = product.description || "Sin descripción disponible.";
 
     const modalAddBtn = document.getElementById('modal-add-btn');
     if (modalAddBtn) {
+        modalAddBtn.onclick = null; 
         modalAddBtn.onclick = () => {
             addToCart(product.id);
             closeProductModal();
@@ -71,18 +72,27 @@ function showProductDetails(id) {
     }
 
     const modal = document.getElementById('product-modal');
-    modal.classList.add('active');
-    modal.style.display = 'flex'; 
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
 }
 
 function closeProductModal() {
     const modal = document.getElementById('product-modal');
     if (modal) {
-        modal.classList.remove('active');
-        modal.style.display = 'none';
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
         document.body.style.overflow = 'auto';
     }
+}
+
+function showNotification() {
+    const notification = document.getElementById('notification');
+    if (!notification) return;
+    notification.classList.add('notification-active');
+    setTimeout(() => {
+        notification.classList.remove('notification-active');
+    }, 3000);
 }
 
 // --- 4. LÓGICA DEL CARRITO ---
@@ -90,23 +100,25 @@ function addToCart(id) {
     const product = products.find(p => p.id === id);
     if (product) {
         cart.push({...product});
-        updateCart();
+        updateCart(true);
         showNotification();
     }
 }
 
 function removeFromCart(index) {
     cart.splice(index, 1);
-    updateCart();
+    updateCart(false);
 }
 
-function updateCart() {
+function updateCart(shouldAnimate = false) {
     localStorage.setItem('cart', JSON.stringify(cart));
     const cartCount = document.getElementById('cart-count');
     const cartItems = document.getElementById('cart-items');
     const cartTotal = document.getElementById('cart-total');
     
-    if (cartCount) cartCount.textContent = cart.length;
+    if (cartCount) {
+        cartCount.textContent = cart.length;
+    }
     
     let total = 0;
     if (cartItems) {
@@ -147,20 +159,14 @@ function filter() {
     displayProducts(filtered);
 }
 
-// --- 6. UTILIDADES Y PAGOS ---
-function showNotification() {
-    const note = document.getElementById('notification');
-    if (note) {
-        note.classList.add('notification-active');
-        setTimeout(() => note.classList.remove('notification-active'), 2500);
-    }
-}
-
+// --- 6. PAGOS Y FACTURACIÓN ---
 function initPayPal() {
     const container = document.getElementById('paypal-button-container');
-    if (!container || cart.length === 0) return;
+    if (!container) return;
     
     container.innerHTML = '';
+    if (cart.length === 0) return;
+    
     const total = cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
 
     paypal.Buttons({
@@ -171,40 +177,234 @@ function initPayPal() {
         },
         onApprove: async (data, actions) => {
             const details = await actions.order.capture();
-            showInvoice(details);
-            cart = [];
-            updateCart();
+            tempPayPalDetails = details; 
+            
+            document.getElementById('email-modal').classList.remove('hidden');
+            document.getElementById('email-modal').classList.add('flex');
+            document.getElementById('cart-modal').classList.add('hidden');
         }
     }).render('#paypal-button-container');
 }
 
-function showInvoice(details) {
-    tempPayPalDetails = details;
-    const modal = document.getElementById('invoice-modal');
-    const itemsList = document.getElementById('invoice-items');
-    const totalEl = document.getElementById('invoice-total');
+function processEmailSubmission() {
+    const emailInput = document.getElementById('customer-delivery-email');
+    const email = emailInput.value.trim();
     
-    itemsList.innerHTML = cart.map(item => `
-        <div class="flex justify-between text-sm py-1 border-b border-zinc-100">
-            <span>${item.name}</span>
-            <span>$${item.price.toFixed(2)}</span>
-        </div>
-    `).join('');
-    
-    totalEl.innerText = `$${cart.reduce((s, i) => s + i.price, 0).toFixed(2)}`;
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    if (!email || !email.includes('@')) {
+        alert("Por favor, ingresa un correo electrónico válido.");
+        return;
+    }
+
+    document.getElementById('email-modal').classList.add('hidden');
+    document.getElementById('email-modal').classList.remove('flex');
+
+    showInvoice(tempPayPalDetails, email);
+    localStorage.removeItem('cart');
 }
 
-// --- 7. INICIALIZACIÓN ---
+//
+
+function showInvoice(details, deliveryEmail) {
+    const modal = document.getElementById('invoice-modal');
+    const paypalTransactionId = details.purchase_units[0].payments.captures[0].id || details.id;
+
+    document.getElementById('invoice-id').innerText = paypalTransactionId;
+    document.getElementById('invoice-date').innerText = new Date().toLocaleDateString();
+    
+    const fullName = `${details.payer.name.given_name} ${details.payer.name.surname}`;
+    document.getElementById('invoice-client-name').innerText = fullName;
+    document.getElementById('invoice-client-paypal').innerText = details.payer.email_address;
+    document.getElementById('invoice-delivery-email').innerText = deliveryEmail;
+
+    const itemsList = document.getElementById('invoice-items');
+    const totalFromPayPal = details.purchase_units[0].amount.value;
+    
+    itemsList.innerHTML = cart.map(item => `
+        <tr class="text-sm border-b border-zinc-100">
+            <td class="py-3">${item.name}</td>
+            <td class="py-3 text-right font-bold">$${item.price.toFixed(2)}</td>
+        </tr>
+    `).join('');
+    
+    document.getElementById('invoice-total').innerText = `$${totalFromPayPal}`;
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
+    cart = [];
+    updateCart(false);
+}
+
+// --- 7. WHATSAPP Y DESCARGAS ---
+function sendInvoiceToWhatsApp() {
+    const orderId = document.getElementById('invoice-id').innerText;
+    const name = document.getElementById('invoice-client-name').innerText;
+    const paypalEmail = document.getElementById('invoice-client-paypal').innerText;
+    const deliveryEmail = document.getElementById('invoice-delivery-email').innerText;
+    const total = document.getElementById('invoice-total').innerText;
+
+    const itemsRows = Array.from(document.querySelectorAll('#invoice-items tr'));
+    const itemsDetail = itemsRows.map(row => {
+        const cols = row.querySelectorAll('td');
+        return cols.length >= 2 ? `- ${cols[0].innerText}: *${cols[1].innerText}*` : '';
+    }).filter(t => t).join('\n');
+
+    const messageText = `*PAGO CONFIRMADO - DAIOR*\n\n*ID de Transacción PayPal:* ${orderId}\n\n*Cliente:* ${name}\n*Cuenta PayPal:* ${paypalEmail}\n\n*Detalle de Compra:*\n${itemsDetail}\n\n*Enviar recursos a:* ${deliveryEmail}\n\n*Total pagado:* *${total}*\n\n_Adjunto comprobante visual generado por la tienda._`;
+
+    window.open(`https://wa.me/${WS_NUMBER.replace(/\D/g, '')}?text=${encodeURIComponent(messageText)}`, '_blank');
+}
+
+function checkoutWhatsApp() {
+    if (cart.length === 0) return alert("El carrito está vacío.");
+    const itemsDetail = cart.map(item => `- ${item.name}: *$${item.price.toFixed(2)}*`).join('\n');
+    const total = cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
+    const messageText = `*SOLICITUD DE PEDIDO - DAIOR*\n\n*Productos:*\n${itemsDetail}\n\n*Total Estimado:* *$${total}*\n\n¿Cómo puedo proceder con el pago?`;
+    window.open(`https://wa.me/${WS_NUMBER.replace(/\D/g, '')}?text=${encodeURIComponent(messageText)}`, '_blank');
+}
+
+async function downloadPNG() {
+    const invoice = document.getElementById('invoice-content');
+    const btn = event.currentTarget;
+    btn.disabled = true;
+    btn.innerText = "Generando imagen...";
+
+    try {
+        const canvas = await html2canvas(invoice, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
+        const link = document.createElement('a');
+        link.download = `Recibo-Daior-${document.getElementById('invoice-id').innerText || "#RECIBO"}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+    } catch (error) {
+        console.error(error);
+        alert("Error al generar imagen.");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg> Descargar Recibo (PNG)`;
+    }
+}
+
+// --- 8. EVENTOS DE CIERRE Y TECLADO ---
+document.getElementById('product-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeProductModal();
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape") {
+        closeProductModal();
+        document.getElementById('cart-modal').classList.add('hidden');
+    }
+});
+// --- 9. INTEGRACIÓN DE MEDIUM ---
+
+// --- 7. INTEGRACIÓN DE MEDIUM (VERSIÓN DEFINITIVA) ---
+async function loadMediumFeed() {
+    const MEDIUM_USER = "@daior"; 
+    const RSS_URL = `https://medium.com/feed/${MEDIUM_USER}`;
+    // Usamos Date.now() para generar un número único y saltar la caché
+    const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}&t=${Date.now()}`;
+
+    const container = document.getElementById('medium-feed');
+    if (!container) return;
+
+    try {
+        const res = await fetch(API_URL, { cache: "no-store" });
+        const data = await res.json();
+
+        if (data.status === 'ok' && data.items && data.items.length > 0) {
+            let htmlContent = '';
+            
+            data.items.slice(0, 4).forEach((post, index) => {
+                // Limpieza profunda de HTML y caracteres de escape
+                const cleanText = post.description
+                    .replace(/<figure[^>]*>.*?<\/figure>/g, "") // Elimina imágenes/captions de Medium
+                    .replace(/<[^>]*>/g, "") // Elimina cualquier otra etiqueta HTML
+                    .replace(/&nbsp;/g, ' ') // Limpia espacios HTML
+                    .trim();
+
+                const snippet = cleanText.substring(0, 110) + "...";
+
+                htmlContent += `
+                    <a href="${post.link}" target="_blank" class="group block py-10 border-b border-zinc-900 hover:bg-zinc-900/20 transition-all px-4 -mx-4">
+                        <div class="flex items-start gap-6">
+                            <span class="text-zinc-800 font-mono text-lg mt-1 group-hover:text-emerald-500 transition-colors">0${index + 1}</span>
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h3 class="text-2xl font-bold text-white group-hover:translate-x-2 transition-transform duration-300">
+                                        ${post.title}
+                                    </h3>
+                                    <svg class="w-6 h-6 text-emerald-500 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                    </svg>
+                                </div>
+                                <p class="text-zinc-500 text-sm leading-relaxed max-w-2xl group-hover:text-zinc-400 transition-colors">
+                                    ${snippet}
+                                </p>
+                                <div class="mt-4 flex items-center gap-4">
+                                    <span class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em]">
+                                        ${new Date(post.pubDate).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+                                    </span>
+                                    <div class="h-[1px] w-8 bg-zinc-800"></div>
+                                    <span class="text-[9px] font-black text-emerald-500/50 uppercase tracking-[0.2em]">Journal</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>`;
+            });
+            container.innerHTML = htmlContent;
+        } else {
+            container.innerHTML = "<p class='text-zinc-600 text-center py-20 uppercase text-xs tracking-widest'>No se encontraron publicaciones recientes.</p>";
+        }
+    } catch (e) {
+        console.error("Error Medium:", e);
+        container.innerHTML = "<p class='text-zinc-600 text-center py-20 uppercase text-xs tracking-widest'>Sincronización temporalmente interrumpida.</p>";
+    }
+}
+
+// --- 8. INICIALIZACIÓN (UNIFICADA) ---
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Cargar datos de tienda y blog
+    loadStore().catch(console.error);
+    loadMediumFeed().catch(console.error);
+
+    // 2. Elementos del carrito
+    const elements = {
+        cartBtn: document.getElementById('cart-button'),
+        closeCart: document.getElementById('close-cart'),
+        cartModal: document.getElementById('cart-modal'),
+        closeOverlay: document.getElementById('close-cart-overlay')
+    };
+
+    if (elements.cartBtn) elements.cartBtn.onclick = () => elements.cartModal?.classList.remove('hidden');
+    if (elements.closeCart) elements.closeCart.onclick = () => elements.cartModal?.classList.add('hidden');
+    if (elements.closeOverlay) elements.closeOverlay.onclick = () => elements.cartModal?.classList.add('hidden');
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     loadStore();
+    loadMediumFeed();
 
-    // Eventos de apertura/cierre de carrito
-    const cartBtn = document.getElementById('cart-button');
-    const closeCart = document.getElementById('close-cart');
-    const cartModal = document.getElementById('cart-modal');
+    const elements = {
+        cartBtn: document.getElementById('cart-button'),
+        closeCart: document.getElementById('close-cart'),
+        cartModal: document.getElementById('cart-modal'),
+        closeOverlay: document.getElementById('close-cart-overlay'),
+        prodModal: document.getElementById('product-modal')
+    };
 
-    if (cartBtn) cartBtn.onclick = () => cartModal.classList.remove('hidden');
-    if (closeCart) closeCart.onclick = () => cartModal.classList.add('hidden');
+    if (elements.cartBtn) elements.cartBtn.onclick = () => elements.cartModal.classList.remove('hidden');
+    if (elements.closeCart) elements.closeCart.onclick = () => elements.cartModal.classList.add('hidden');
+    if (elements.closeOverlay) elements.closeOverlay.onclick = () => elements.cartModal.classList.add('hidden');
+    
+    if (elements.prodModal) {
+        elements.prodModal.addEventListener('click', (e) => {
+            if (e.target === elements.prodModal) closeProductModal();
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {
+            closeProductModal();
+            if (elements.cartModal) elements.cartModal.classList.add('hidden');
+        }
+    });
 });
