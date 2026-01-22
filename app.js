@@ -243,7 +243,7 @@ function sendInvoiceToWhatsApp() {
 function checkoutWhatsApp() {
     if (cart.length === 0) return alert("Carrito vacío");
     let total = 0;
-    let message = "¡Hola Daior! 🍃 Me interesa comprar:\n\n";
+    let message = "¡Hola Daior! Me interesa comprar:\n\n";
     cart.forEach((item, i) => {
         message += `${i+1}. *${item.name}* ($${item.price})\n`;
         total += item.price;
