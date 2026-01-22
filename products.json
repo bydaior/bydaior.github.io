@@ -26,18 +26,18 @@
   {
     "id": 4,
     "category": "servicios",
-    "name": "Exclusive Beat",
-    "price": 150.00,
-    "image": "https://i.pinimg.com/736x/8c/d1/a7/8cd1a7b55f8e1a4dd825a864ff8e1c97.jpg",
-    "description": "Producción musical exclusiva y personalizada."
-  },
-  {
-    "id": 5,
-    "category": "servicios",
     "name": "Masterización",
     "price": 45.00,
     "image": "https://i.pinimg.com/736x/8c/d1/a7/8cd1a7b55f8e1a4dd825a864ff8e1c97.jpg",
     "description": "Masterización profesional para finalizar tu track."
+  },
+  {
+    "id": 5,
+    "category": "servicios",
+    "name": "Exclusive Beat",
+    "price": 150.00,
+    "image": "https://i.pinimg.com/736x/5c/70/eb/5c70eb32b719771c20bf4a262fe4cb94.jpg",
+    "description": "Producción musical exclusiva y personalizada."
   },
   {
     "id": 6,
@@ -49,3 +49,4 @@
   }
 
 ]
+
