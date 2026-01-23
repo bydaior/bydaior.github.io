@@ -2,7 +2,7 @@
     {
         "id": 1,
         "title": "Se debe mantener un volumen constante durante la mezcla",
-        "description": "Explorando texturas orgánicas aplicadas a la música electrónica actual.",
+        "description": "Un tip demasiado importante para mezclas exitosas.",
         "date": "2025-08-17",
         "link": "https://www.patreon.com/posts/136724004",
         "category": "Mezcla"
@@ -10,7 +10,7 @@
     {
         "id": 2,
         "title": "Plugins Gratis de Mezcla que necesitas en 2025",
-        "description": "Explorando texturas orgánicas aplicadas a la música electrónica actual.",
+        "description": "No necesitas gastar dinero para lograr un buen sonido...",
         "date": "2025-11-08",
         "link": "https://www.patreon.com/posts/143119575",
         "category": "Plugins"
@@ -19,12 +19,22 @@
 
         "id": 3,
         "title": "Mezclar Voces con Plugins Gratuitos",
-        "description": "Mezclar voces",
+        "description": "Una cadena de plugins ganadora que reemplaza a plugins de paga.",
         "date": "2026-01-22",
         "link": "https://www.patreon.com/posts/146865639",
         "category": "Mezcla"
+    },
+    {
+
+        "id": 4,
+        "title": "Plantilla GRATIS para Grabar VOCES en FL Studio 2025 🥭",
+        "description": "Necesitas esta plantilla si quieres grabar en FL Studio como lo hacen los profesionales en otros DAW.",
+        "date": "2026-01-22",
+        "link": "https://youtu.be/AMWCPCxFWmk",
+        "category": "Templates"
     }
 ]
+
 
 
 
