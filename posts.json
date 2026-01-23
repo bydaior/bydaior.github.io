@@ -1,18 +1,26 @@
 [
     {
         "id": 1,
-        "title": "Los Secretos del Low End",
-        "description": "Cómo lograr que tus bajos suenen profesionales y definidos en cualquier sistema de sonido.",
-        "date": "2024-05-20",
-        "link": "https://medium.com/@daior/tu-post-1",
+        "title": "Mezclar Voces con Plugins Gratuitos",
+        "description": "Mezclar voces",
+        "date": "01-22-2026",
+        "link": "https://www.patreon.com/posts/146865639",
         "category": "Mezcla"
     },
     {
         "id": 2,
-        "title": "Diseño Sonoro Moderno",
+        "title": "Plugins Gratis de Mezcla que necesitas en 2025",
         "description": "Explorando texturas orgánicas aplicadas a la música electrónica actual.",
-        "date": "2024-05-15",
-        "link": "https://medium.com/@daior/tu-post-2",
-        "category": "Producción"
+        "date": "01-11-2025",
+        "link": "https://www.patreon.com/posts/143119575",
+        "category": "Plugins"
+    }
+    {
+        "id": 3,
+        "title": "Se debe mantener un volumen constante durante la mezcla",
+        "description": "Explorando texturas orgánicas aplicadas a la música electrónica actual.",
+        "date": "01-08-2025",
+        "link": "https://www.patreon.com/posts/136724004",
+        "category": "Mezcla"
     }
 ]
