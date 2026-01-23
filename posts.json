@@ -1,29 +1,31 @@
 [
     {
         "id": 1,
-        "title": "Mezclar Voces con Plugins Gratuitos",
-        "description": "Mezclar voces",
-        "date": "2026-01-22",
-        "link": "https://www.patreon.com/posts/146865639",
+        "title": "Se debe mantener un volumen constante durante la mezcla",
+        "description": "Explorando texturas orgánicas aplicadas a la música electrónica actual.",
+        "date": "2025-08-17",
+        "link": "https://www.patreon.com/posts/136724004",
         "category": "Mezcla"
     },
     {
         "id": 2,
         "title": "Plugins Gratis de Mezcla que necesitas en 2025",
         "description": "Explorando texturas orgánicas aplicadas a la música electrónica actual.",
-        "date": "2025-01-11",
+        "date": "2025-11-08",
         "link": "https://www.patreon.com/posts/143119575",
         "category": "Plugins"
     },
     {
+
         "id": 3,
-        "title": "Se debe mantener un volumen constante durante la mezcla",
-        "description": "Explorando texturas orgánicas aplicadas a la música electrónica actual.",
-        "date": "2025-01-08",
-        "link": "https://www.patreon.com/posts/136724004",
+        "title": "Mezclar Voces con Plugins Gratuitos",
+        "description": "Mezclar voces",
+        "date": "2026-01-22",
+        "link": "https://www.patreon.com/posts/146865639",
         "category": "Mezcla"
     }
 ]
+
 
 
 
