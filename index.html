@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daior | Balance</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.paypal.com/sdk/js?client-id=Ab0b1huR_F-Cw51822qKzSaV7pc2XRKGfLhArxSVQ2mnjSw48O2olGo3SU31K4ttsFIuew00m5rJOH4N&currency=USD"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AeZGoX-wRZUnZVUyFdSzaAvFQro93wsgQDhY6HhgRSQUVDmuZpvcxhGJ3ZtE0kA2wMyTRvWsAzr05bAF&currency=USD"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -13,6 +13,7 @@
         .glass { background: rgba(9, 9, 11, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .notification-enter { transform: translate(-50%, -100%); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .notification-active { transform: translate(-50%, 20px); opacity: 1; }
+        .logotop {border-radius: 0px; width: 35px;}
     </style>
     <link rel="icon" type="image/png" href="images/favicon.ico">
     <meta name="description" content="Daior Shop - Beats exclusivos, servicios de mezcla y masterización profesional. Eleva tu sonido al nivel de la industria.">
@@ -31,7 +32,9 @@
     <nav class="fixed top-4 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-7xl glass rounded-3xl shadow-2xl">
         <div class="px-6 h-20 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-2 group">
-                <span class="text-2xl group-hover:rotate-12 transition-transform">🍃</span>
+                <span class="text-2xl group-hover:rotate-12 transition-transform">
+                    <img class="logotop" src="images/Daior-Logo-Black.png">
+                </span>
                 <span class="text-xl font-bold tracking-tighter uppercase">Daior</span>
             </a>
             <button id="cart-button" class="relative p-2.5 bg-zinc-900 rounded-2xl border border-zinc-800 hover:border-emerald-500/50 transition-all">
