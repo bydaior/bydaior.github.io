@@ -294,95 +294,59 @@ document.addEventListener('keydown', (e) => {
         document.getElementById('cart-modal').classList.add('hidden');
     }
 });
-// --- 9. INTEGRACIÓN DE MEDIUM ---
-
-// --- 7. INTEGRACIÓN DE MEDIUM (VERSIÓN DEFINITIVA) ---
-async function loadMediumFeed() {
-    const MEDIUM_USER = "@daior"; 
-    const RSS_URL = `https://medium.com/feed/${MEDIUM_USER}`;
-    // Usamos Date.now() para generar un número único y saltar la caché
-    const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}&t=${Date.now()}`;
-
-    const container = document.getElementById('medium-feed');
+// --- 7. CARGA DE POSTS (MÉTODO LOCAL JSON DESDE GITHUB) ---
+async function loadJournalPosts() {
+    const container = document.getElementById('journal-feed'); 
     if (!container) return;
 
     try {
-        const res = await fetch(API_URL, { cache: "no-store" });
-        const data = await res.json();
+        const response = await fetch(`https://bydaior.github.io/posts.json?t=${Date.now()}`);
+        if (!response.ok) throw new Error("No se pudo obtener el archivo de posts");
+        
+        let posts = await response.json();
 
-        if (data.status === 'ok' && data.items && data.items.length > 0) {
-            let htmlContent = '';
-            
-            data.items.slice(0, 4).forEach((post, index) => {
-                // Limpieza profunda de HTML y caracteres de escape
-                const cleanText = post.description
-                    .replace(/<figure[^>]*>.*?<\/figure>/g, "") // Elimina imágenes/captions de Medium
-                    .replace(/<[^>]*>/g, "") // Elimina cualquier otra etiqueta HTML
-                    .replace(/&nbsp;/g, ' ') // Limpia espacios HTML
-                    .trim();
+        // --- LÓGICA DE ORDENAMIENTO POR FECHA ---
+        // Ordenamos de mayor a menor (el más reciente arriba)
+        posts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-                const snippet = cleanText.substring(0, 110) + "...";
+        // Renderizamos solo los primeros 4 después de ordenar
+        container.innerHTML = posts.slice(0, 4).map((post, index) => {
+            const dateOptions = { month: 'long', year: 'numeric' };
+            const dateObj = new Date(post.date + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('es-ES', dateOptions);
 
-                htmlContent += `
-                    <a href="${post.link}" target="_blank" class="group block py-10 border-b border-zinc-900 hover:bg-zinc-900/20 transition-all px-4 -mx-4">
-                        <div class="flex items-start gap-6">
-                            <span class="text-zinc-800 font-mono text-lg mt-1 group-hover:text-emerald-500 transition-colors">0${index + 1}</span>
-                            <div class="flex-grow">
-                                <div class="flex justify-between items-center mb-3">
-                                    <h3 class="text-2xl font-bold text-white group-hover:translate-x-2 transition-transform duration-300">
-                                        ${post.title}
-                                    </h3>
-                                    <svg class="w-6 h-6 text-emerald-500 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                    </svg>
-                                </div>
-                                <p class="text-zinc-500 text-sm leading-relaxed max-w-2xl group-hover:text-zinc-400 transition-colors">
-                                    ${snippet}
-                                </p>
-                                <div class="mt-4 flex items-center gap-4">
-                                    <span class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em]">
-                                        ${new Date(post.pubDate).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
-                                    </span>
-                                    <div class="h-[1px] w-8 bg-zinc-800"></div>
-                                    <span class="text-[9px] font-black text-emerald-500/50 uppercase tracking-[0.2em]">Journal</span>
-                                </div>
+            return `
+                <a href="${post.link}" target="_blank" class="group block py-10 border-b border-zinc-900 hover:bg-zinc-900/20 transition-all px-4 -mx-4">
+                    <div class="flex items-start gap-6">
+                        <span class="text-zinc-800 font-mono text-lg mt-1 group-hover:text-emerald-500 transition-colors">0${index + 1}</span>
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-2xl font-bold text-white group-hover:translate-x-2 transition-transform duration-300">${post.title}</h3>
+                                <svg class="w-6 h-6 text-emerald-500 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </div>
+                            <p class="text-zinc-500 text-sm leading-relaxed max-w-2xl">${post.description}</p>
+                            <div class="mt-4 flex items-center gap-4">
+                                <span class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em]">${formattedDate}</span>
+                                <div class="h-[1px] w-8 bg-zinc-800"></div>
+                                <span class="text-[9px] font-black text-emerald-500/50 uppercase tracking-[0.2em]">${post.category || 'Journal'}</span>
                             </div>
                         </div>
-                    </a>`;
-            });
-            container.innerHTML = htmlContent;
-        } else {
-            container.innerHTML = "<p class='text-zinc-600 text-center py-20 uppercase text-xs tracking-widest'>No se encontraron publicaciones recientes.</p>";
-        }
-    } catch (e) {
-        console.error("Error Medium:", e);
-        container.innerHTML = "<p class='text-zinc-600 text-center py-20 uppercase text-xs tracking-widest'>Sincronización temporalmente interrumpida.</p>";
+                    </div>
+                </a>`;
+        }).join('');
+
+    } catch (error) {
+        console.error("Error cargando posts:", error);
+        container.innerHTML = "<p class='text-zinc-600 text-center py-20 font-mono text-xs uppercase'>Contenido en actualización...</p>";
     }
 }
-
-// --- 8. INICIALIZACIÓN (UNIFICADA) ---
+// --- 8. INICIO UNIFICADO (UN SOLO EVENTO PARA TODO) ---
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Cargar datos de tienda y blog
-    loadStore().catch(console.error);
-    loadMediumFeed().catch(console.error);
-
-    // 2. Elementos del carrito
-    const elements = {
-        cartBtn: document.getElementById('cart-button'),
-        closeCart: document.getElementById('close-cart'),
-        cartModal: document.getElementById('cart-modal'),
-        closeOverlay: document.getElementById('close-cart-overlay')
-    };
-
-    if (elements.cartBtn) elements.cartBtn.onclick = () => elements.cartModal?.classList.remove('hidden');
-    if (elements.closeCart) elements.closeCart.onclick = () => elements.cartModal?.classList.add('hidden');
-    if (elements.closeOverlay) elements.closeOverlay.onclick = () => elements.cartModal?.classList.add('hidden');
-});
-
-document.addEventListener('DOMContentLoaded', () => {
+    // 1. Cargar datos
     loadStore();
-    loadMediumFeed();
+    loadJournalPosts();
 
+    // 2. Elementos del DOM
     const elements = {
         cartBtn: document.getElementById('cart-button'),
         closeCart: document.getElementById('close-cart'),
@@ -391,20 +355,23 @@ document.addEventListener('DOMContentLoaded', () => {
         prodModal: document.getElementById('product-modal')
     };
 
-    if (elements.cartBtn) elements.cartBtn.onclick = () => elements.cartModal.classList.remove('hidden');
-    if (elements.closeCart) elements.closeCart.onclick = () => elements.cartModal.classList.add('hidden');
-    if (elements.closeOverlay) elements.closeOverlay.onclick = () => elements.cartModal.classList.add('hidden');
-    
+    // 3. Eventos de Carrito
+    if (elements.cartBtn) elements.cartBtn.onclick = () => elements.cartModal?.classList.remove('hidden');
+    if (elements.closeCart) elements.closeCart.onclick = () => elements.cartModal?.classList.add('hidden');
+    if (elements.closeOverlay) elements.closeOverlay.onclick = () => elements.cartModal?.classList.add('hidden');
+
+    // 4. Cierre de Modal de Producto al hacer clic fuera
     if (elements.prodModal) {
         elements.prodModal.addEventListener('click', (e) => {
             if (e.target === elements.prodModal) closeProductModal();
         });
     }
 
+    // 5. Tecla Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === "Escape") {
             closeProductModal();
-            if (elements.cartModal) elements.cartModal.classList.add('hidden');
+            elements.cartModal?.classList.add('hidden');
         }
     });
 });
