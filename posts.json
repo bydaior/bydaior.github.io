@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "title": "Los Secretos del Low End",
+        "description": "Cómo lograr que tus bajos suenen profesionales y definidos en cualquier sistema de sonido.",
+        "date": "2024-05-20",
+        "link": "https://medium.com/@daior/tu-post-1",
+        "category": "Mezcla"
+    },
+    {
+        "id": 2,
+        "title": "Diseño Sonoro Moderno",
+        "description": "Explorando texturas orgánicas aplicadas a la música electrónica actual.",
+        "date": "2024-05-15",
+        "link": "https://medium.com/@daior/tu-post-2",
+        "category": "Producción"
+    }
+]
